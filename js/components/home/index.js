@@ -1,9 +1,9 @@
 
 import React, { Component } from 'react';
-import { TouchableOpacity, Image } from 'react-native';
+import { TouchableOpacity, Image, Modal } from 'react-native';
 import { connect } from 'react-redux';
 import { actions } from 'react-native-navigation-redux-helpers';
-import { Container, Header, Title, Content, Card, CardItem, Text, Button, Icon, InputGroup, Input, Thumbnail, List, ListItem, Spinner } from 'native-base';
+import { Container, Header, Title, Content, H1, H2, H3, H4, Card, CardItem, Text, Button, Icon, InputGroup, Input, Thumbnail, List, ListItem, Spinner } from 'native-base';
 import { Grid, Row } from 'react-native-easy-grid';
 
 import { openDrawer } from '../../actions/drawer';
@@ -79,16 +79,10 @@ class Home extends Component {
       });    
   }
 
-  goToDetail = () => {
-    this.props.navigator.push({
-      name: 'Detail',
-      title: "Detail",
-      index: 2,
-      passProps: {
-            data: "12441212",
-        }
-    });
+  setModalVisible(visible) {
+    this.setState({modalVisible: visible});
   }
+
 
   render() {
     return (
@@ -129,7 +123,7 @@ class Home extends Component {
           }
         </Header>
 
-        <Content>
+        <Content padder>
           {this.state.is_loading_data ? <Spinner color='blue' visible={this.state.is_loading_data} /> : null}
 
          <List dataArray={this.state.results.items} renderRow={(item) =>               
@@ -141,116 +135,387 @@ class Home extends Component {
               </ListItem>                            
           } />
 
-          <Card style={{ flex: 0 }}>
+          <Card style={{ flex: 0}}>
               <CardItem>
                   <Thumbnail source={require('../../../images/avatar.png')} />
-                  <Text onPress = {this.goToDetail}>Kênh rao bán Pet số 1 Việt Nam</Text>
+                  <Text onPress={() => this.pushRoute('detail', 2)}>Bán gấp 3 em Pull Dog tại Quận 1, TP. Hồ Chí Minh</Text>
                   <Text note>Phạm Ngọc Linh</Text>
               </CardItem>
 
-              <CardItem cardBody> 
+              <CardItem onPress={() => this.pushRoute('detail', 2)}>                        
                   <Image style={{ resizeMode: 'cover', width: null }} source={require('../../../images/thumbnail.jpg')} /> 
+              </CardItem>
+
+              <CardItem>                        
                   <Text>
                       CHỢ THÚ CƯNG Online là nơi giúp các bạn yêu Thú Cưng có thể tìm được các bé thú đánh yêu nhất. Page được lập không vì mục đích lợi nhuận.
                   </Text>
-                  <Button transparent textStyle={{color: '#87838B'}}>
-                      <Icon name="logo-github" />
-                      <Text>636 likes</Text>
-                  </Button>
+              </CardItem>
 
-                  <Button transparent textStyle={{color: '#87838B'}}>
-                      <Icon name="logo-github" />
-                      <Text>742 shares</Text>
+              <CardItem style={{flex: 0, flexDirection: 'row'}}>
+                  <Button transparent>
+                      <Icon name="ios-thumbs-up" />
+                      1,926
+                  </Button>
+                  <Button transparent>
+                      <Icon name="ios-heart" />
+                      Chó / Mèo / ...
+                  </Button>
+                  <Button onPress={() => {this.setModalVisible(true)}}>
+                      <Icon name="ios-share" />
+                      CALL NOW
                   </Button>
               </CardItem>
          </Card>
 
-         <Card style={{ flex: 0 }}>
+         <Card style={{ flex: 0, marginTop: 10 }}>
               <CardItem>
                   <Thumbnail source={require('../../../images/avatar.png')} />
-                  <Text onPress = {this.goToDetail}>Kênh rao bán Pet số 1 Việt Nam</Text>
+                  <Text onPress={() => this.pushRoute('detail', 2)}>Bán gấp 3 em Pull Dog tại Quận 1, TP. Hồ Chí Minh</Text>
                   <Text note>Phạm Ngọc Linh</Text>
               </CardItem>
 
-              <CardItem cardBody> 
+              <CardItem onPress={() => this.pushRoute('detail', 2)}>                        
                   <Image style={{ resizeMode: 'cover', width: null }} source={require('../../../images/thumbnail.jpg')} /> 
-                  <Text>
-                      CHỢ THÚ CƯNG Online là nơi giúp các bạn yêu Thú Cưng có thể tìm được các bé thú đánh yêu nhất. Page được lập không vì mục đích lợi nhuận.
-                  </Text>
-                  <Button transparent textStyle={{color: '#87838B'}}>
-                      <Icon name="logo-github" />
-                      <Text>636 likes</Text>
-                  </Button>
+              </CardItem>
 
-                  <Button transparent textStyle={{color: '#87838B'}}>
-                      <Icon name="logo-github" />
-                      <Text>742 shares</Text>
+              <CardItem>                        
+                  <Text>
+                      CHỢ THÚ CƯNG Online là nơi giúp các bạn yêu Thú Cưng có thể tìm được các bé thú đánh yêu nhất.
+                      Page được lập không vì mục đích lợi nhuận.
+                      CHỢ THÚ CƯNG Online là nơi giúp các bạn yêu Thú Cưng có thể tìm được các bé thú đánh yêu nhất.
+                      Page được lập không vì mục đích lợi nhuận.
+                  </Text>
+              </CardItem>
+
+              <CardItem style={{flex: 0, flexDirection: 'row'}}>
+                  <Button transparent>
+                      <Icon name="ios-thumbs-up" />
+                      1,926
+                  </Button>
+                  <Button transparent>
+                      <Icon name="ios-heart" />
+                      Chó / Mèo / ...
+                  </Button>
+                  <Button>
+                      <Icon name="ios-share" />
+                      CALL NOW
                   </Button>
               </CardItem>
          </Card>
 
-         <Card style={{ flex: 0 }}>
+         <Card style={{ flex: 0, marginTop: 10 }}>
               <CardItem>
                   <Thumbnail source={require('../../../images/avatar.png')} />
-                  <Text onPress = {this.goToDetail}>Kênh rao bán Pet số 1 Việt Nam</Text>
+                  <Text onPress={() => this.pushRoute('detail', 2)}>Bán gấp 3 em Pull Dog tại Quận 1, TP. Hồ Chí Minh</Text>
                   <Text note>Phạm Ngọc Linh</Text>
               </CardItem>
 
-              <CardItem cardBody> 
+              <CardItem onPress={() => this.pushRoute('detail', 2)}>                        
                   <Image style={{ resizeMode: 'cover', width: null }} source={require('../../../images/thumbnail.jpg')} /> 
+              </CardItem>
+
+              <CardItem>                        
                   <Text>
                       CHỢ THÚ CƯNG Online là nơi giúp các bạn yêu Thú Cưng có thể tìm được các bé thú đánh yêu nhất. Page được lập không vì mục đích lợi nhuận.
                   </Text>
-                  <Button transparent textStyle={{color: '#87838B'}}>
-                      <Icon name="logo-github" />
-                      <Text>636 likes</Text>
-                  </Button>
+              </CardItem>
 
-                  <Button transparent textStyle={{color: '#87838B'}}>
-                      <Icon name="logo-github" />
-                      <Text>742 shares</Text>
+              <CardItem style={{flex: 0, flexDirection: 'row'}}>
+                  <Button transparent>
+                      <Icon name="ios-thumbs-up" />
+                      1,926
+                  </Button>
+                  <Button transparent>
+                      <Icon name="ios-heart" />
+                      Chó / Mèo / ...
+                  </Button>
+                  <Button>
+                      <Icon name="ios-share" />
+                      CALL NOW
                   </Button>
               </CardItem>
          </Card>
 
-         <Card style={{ flex: 0 }}>
+         <Card style={{ flex: 0, marginTop: 10 }}>
               <CardItem>
                   <Thumbnail source={require('../../../images/avatar.png')} />
-                  <Text onPress = {this.goToDetail}>Kênh rao bán Pet số 1 Việt Nam</Text>
+                  <Text onPress={() => this.pushRoute('detail', 2)}>Bán gấp 3 em Pull Dog tại Quận 1, TP. Hồ Chí Minh</Text>
                   <Text note>Phạm Ngọc Linh</Text>
               </CardItem>
 
-              <CardItem cardBody> 
+              <CardItem onPress={() => this.pushRoute('detail', 2)}>                        
                   <Image style={{ resizeMode: 'cover', width: null }} source={require('../../../images/thumbnail.jpg')} /> 
+              </CardItem>
+
+              <CardItem>                        
                   <Text>
                       CHỢ THÚ CƯNG Online là nơi giúp các bạn yêu Thú Cưng có thể tìm được các bé thú đánh yêu nhất. Page được lập không vì mục đích lợi nhuận.
                   </Text>
-                  <Button transparent textStyle={{color: '#87838B'}}>
-                      <Icon name="logo-github" />
-                      <Text>636 likes</Text>
-                  </Button>
+              </CardItem>
 
-                  <Button transparent textStyle={{color: '#87838B'}}>
-                      <Icon name="logo-github" />
-                      <Text>742 shares</Text>
+              <CardItem style={{flex: 0, flexDirection: 'row'}}>
+                  <Button transparent>
+                      <Icon name="ios-thumbs-up" />
+                      1,926
+                  </Button>
+                  <Button transparent>
+                      <Icon name="ios-heart" />
+                      Chó / Mèo / ...
+                  </Button>
+                  <Button>
+                      <Icon name="ios-share" />
+                      CALL NOW
                   </Button>
               </CardItem>
          </Card>
 
+         <Card style={{ flex: 0, marginTop: 10}}>
+              <CardItem>
+                  <Thumbnail source={require('../../../images/avatar.png')} />
+                  <Text onPress={() => this.pushRoute('detail', 2)}>Bán gấp 3 em Pull Dog tại Quận 1, TP. Hồ Chí Minh</Text>
+                  <Text note>Phạm Ngọc Linh</Text>
+              </CardItem>
 
-          <Button onPress = {() => this.props.reset(this.props.navigation.key)}>Logout</Button>
-          <Grid style={styles.mt}>
-            {this.props.list.map((item, i) =>
-              <Row key={i}>
-                <TouchableOpacity
-                  style={styles.row}
-                  onPress={() => this.pushRoute('blankPage', i)}
-                >
-                  <Text style={styles.text}>{item}</Text>
-                </TouchableOpacity>
-              </Row>
-            )}
-          </Grid>
+              <CardItem onPress={() => this.pushRoute('detail', 2)}>                        
+                  <Image style={{ resizeMode: 'cover', width: null }} source={require('../../../images/thumbnail.jpg')} /> 
+              </CardItem>
+
+              <CardItem>                        
+                  <Text>
+                      CHỢ THÚ CƯNG Online là nơi giúp các bạn yêu Thú Cưng có thể tìm được các bé thú đánh yêu nhất. Page được lập không vì mục đích lợi nhuận.
+                  </Text>
+              </CardItem>
+
+              <CardItem style={{flex: 0, flexDirection: 'row'}}>
+                  <Button transparent>
+                      <Icon name="ios-thumbs-up" />
+                      1,926
+                  </Button>
+                  <Button transparent>
+                      <Icon name="ios-heart" />
+                      Chó / Mèo / ...
+                  </Button>
+                  <Button>
+                      <Icon name="ios-share" />
+                      CALL NOW
+                  </Button>
+              </CardItem>
+         </Card>
+
+         <Modal
+              animationType="slide"
+              transparent={false}
+              visible={this.state.modalVisible}
+              onRequestClose={() => {
+                  this.setModalVisible(!this.state.modalVisible, this.state.selectedItem)
+              }}
+              >
+              <Card style={{paddingTop: 20}}>
+                  <CardItem cardBody>
+                      <Image source={require('../../../images/thumbnail.jpg')}  />
+                      <Text>
+                      List must contain one or more list elements.
+                      Props provide configurability for several features.
+                      Provides a number of attributes that follows styling and interaction guidelines for each platform,
+                      so that they are intuitive for users to interact with
+                      </Text>
+
+                      <Button danger style={{alignSelf: 'flex-end'}} onPress={() => {
+                        this.setModalVisible(!this.state.modalVisible, this.state.selectedItem)
+                         }}>
+                          Go Back
+                      </Button>
+                  </CardItem>
+              </Card>
+          </Modal>
+
+          {
+            /*
+            <Card style={{ flex: 0 }}>
+                <CardItem>
+                    <Thumbnail source={require('../../../images/avatar.png')} />
+                    <Text onPress={() => this.pushRoute('detail', 2)}>Kênh rao bán Pet số 1 Việt Nam</Text>
+                    <Text note>Phạm Ngọc Linh</Text>
+                </CardItem>
+
+                <CardItem cardBody> 
+                    <Image style={{ resizeMode: 'cover', width: null }} source={require('../../../images/thumbnail.jpg')} /> 
+                    <Text>
+                        CHỢ THÚ CƯNG Online là nơi giúp các bạn yêu Thú Cưng có thể tìm được các bé thú đánh yêu nhất. Page được lập không vì mục đích lợi nhuận.
+                    </Text>
+                    <Button transparent textStyle={{color: '#87838B'}}>
+                        <Icon name="logo-github" />
+                        <Text>636 likes</Text>
+                    </Button>
+
+                    <Button transparent textStyle={{color: '#87838B'}}>
+                        <Icon name="logo-github" />
+                        <Text>742 shares</Text>
+                    </Button>
+                </CardItem>
+           </Card>
+
+           <Card style={{ flex: 0 }}>
+                <CardItem>
+                    <Thumbnail source={require('../../../images/avatar.png')} />
+                    <Text onPress={() => this.pushRoute('detail', 2)}>Kênh rao bán Pet số 1 Việt Nam</Text>
+                    <Text note>Phạm Ngọc Linh</Text>
+                </CardItem>
+
+                <CardItem cardBody> 
+                    <Image style={{ resizeMode: 'cover', width: null }} source={require('../../../images/thumbnail.jpg')} /> 
+                    <Text>
+                        CHỢ THÚ CƯNG Online là nơi giúp các bạn yêu Thú Cưng có thể tìm được các bé thú đánh yêu nhất. Page được lập không vì mục đích lợi nhuận.
+                    </Text>
+                    <Button transparent textStyle={{color: '#87838B'}}>
+                        <Icon name="logo-github" />
+                        <Text>636 likes</Text>
+                    </Button>
+
+                    <Button transparent textStyle={{color: '#87838B'}}>
+                        <Icon name="logo-github" />
+                        <Text>742 shares</Text>
+                    </Button>
+                </CardItem>
+           </Card>
+
+           <Card style={{ flex: 0 }}>
+                <CardItem>
+                    <Thumbnail source={require('../../../images/avatar.png')} />
+                    <Text onPress={() => this.pushRoute('detail', 2)}>Kênh rao bán Pet số 1 Việt Nam</Text>
+                    <Text note>Phạm Ngọc Linh</Text>
+                </CardItem>
+
+                <CardItem cardBody> 
+                    <Image style={{ resizeMode: 'cover', width: null }} source={require('../../../images/thumbnail.jpg')} /> 
+                    <Text>
+                        CHỢ THÚ CƯNG Online là nơi giúp các bạn yêu Thú Cưng có thể tìm được các bé thú đánh yêu nhất. Page được lập không vì mục đích lợi nhuận.
+                    </Text>
+                    <Button transparent textStyle={{color: '#87838B'}}>
+                        <Icon name="logo-github" />
+                        <Text>636 likes</Text>
+                    </Button>
+
+                    <Button transparent textStyle={{color: '#87838B'}}>
+                        <Icon name="logo-github" />
+                        <Text>742 shares</Text>
+                    </Button>
+                </CardItem>
+           </Card>
+
+           <Card style={{ flex: 0 }}>
+                <CardItem>
+                    <Thumbnail source={require('../../../images/avatar.png')} />
+                    <Text onPress={() => this.pushRoute('detail', 2)}>Kênh rao bán Pet số 1 Việt Nam</Text>
+                    <Text note>Phạm Ngọc Linh</Text>
+                </CardItem>
+
+                <CardItem cardBody> 
+                    <Image style={{ resizeMode: 'cover', width: null }} source={require('../../../images/thumbnail.jpg')} /> 
+                    <Text>
+                        CHỢ THÚ CƯNG Online là nơi giúp các bạn yêu Thú Cưng có thể tìm được các bé thú đánh yêu nhất. Page được lập không vì mục đích lợi nhuận.
+                    </Text>
+                    <Button transparent textStyle={{color: '#87838B'}}>
+                        <Icon name="logo-github" />
+                        <Text>636 likes</Text>
+                    </Button>
+
+                    <Button transparent textStyle={{color: '#87838B'}}>
+                        <Icon name="logo-github" />
+                        <Text>742 shares</Text>
+                    </Button>
+                </CardItem>
+           </Card>
+
+           <Card style={{ flex: 0 }}>
+                <CardItem>
+                    <Thumbnail source={require('../../../images/avatar.png')} />
+                    <Text onPress={() => this.pushRoute('detail', 2)}>Kênh rao bán Pet số 1 Việt Nam</Text>
+                    <Text note>Phạm Ngọc Linh</Text>
+                </CardItem>
+
+                <CardItem cardBody> 
+                    <Image style={{ resizeMode: 'cover', width: null }} source={require('../../../images/thumbnail.jpg')} /> 
+                    <Text>
+                        CHỢ THÚ CƯNG Online là nơi giúp các bạn yêu Thú Cưng có thể tìm được các bé thú đánh yêu nhất. Page được lập không vì mục đích lợi nhuận.
+                    </Text>
+                    <Button transparent textStyle={{color: '#87838B'}}>
+                        <Icon name="logo-github" />
+                        <Text>636 likes</Text>
+                    </Button>
+
+                    <Button transparent textStyle={{color: '#87838B'}}>
+                        <Icon name="logo-github" />
+                        <Text>742 shares</Text>
+                    </Button>
+                </CardItem>
+           </Card>
+
+           <Card style={{ flex: 0 }}>
+                <CardItem>
+                    <Thumbnail source={require('../../../images/avatar.png')} />
+                    <Text onPress={() => this.pushRoute('detail', 2)}>Kênh rao bán Pet số 1 Việt Nam</Text>
+                    <Text note>Phạm Ngọc Linh</Text>
+                </CardItem>
+
+                <CardItem cardBody> 
+                    <Image style={{ resizeMode: 'cover', width: null }} source={require('../../../images/thumbnail.jpg')} /> 
+                    <Text>
+                        CHỢ THÚ CƯNG Online là nơi giúp các bạn yêu Thú Cưng có thể tìm được các bé thú đánh yêu nhất. Page được lập không vì mục đích lợi nhuận.
+                    </Text>
+                    <Button transparent textStyle={{color: '#87838B'}}>
+                        <Icon name="logo-github" />
+                        <Text>636 likes</Text>
+                    </Button>
+
+                    <Button transparent textStyle={{color: '#87838B'}}>
+                        <Icon name="logo-github" />
+                        <Text>742 shares</Text>
+                    </Button>
+                </CardItem>
+           </Card>
+
+           <Card style={{ flex: 0 }}>
+                <CardItem>
+                    <Thumbnail source={require('../../../images/avatar.png')} />
+                    <Text onPress={() => this.pushRoute('detail', 2)}>Kênh rao bán Pet số 1 Việt Nam</Text>
+                    <Text note>Phạm Ngọc Linh</Text>
+                </CardItem>
+
+                <CardItem cardBody> 
+                    <Image style={{ resizeMode: 'cover', width: null }} source={require('../../../images/thumbnail.jpg')} /> 
+                    <Text>
+                        CHỢ THÚ CƯNG Online là nơi giúp các bạn yêu Thú Cưng có thể tìm được các bé thú đánh yêu nhất. Page được lập không vì mục đích lợi nhuận.
+                    </Text>
+                    <Button transparent textStyle={{color: '#87838B'}}>
+                        <Icon name="logo-github" />
+                        <Text>636 likes</Text>
+                    </Button>
+
+                    <Button transparent textStyle={{color: '#87838B'}}>
+                        <Icon name="logo-github" />
+                        <Text>742 shares</Text>
+                    </Button>
+                </CardItem>
+           </Card>
+
+
+            <Button onPress = {() => this.props.reset(this.props.navigation.key)}>Logout</Button>
+            <Grid style={styles.mt}>
+              {this.props.list.map((item, i) =>
+                <Row key={i}>
+                  <TouchableOpacity
+                    style={styles.row}
+                    onPress={() => this.pushRoute('blankPage', i)}
+                  >
+                    <Text style={styles.text}>{item}</Text>
+                  </TouchableOpacity>
+                </Row>
+              )}
+            </Grid>
+            */
+          }
         </Content>
       </Container>
     );
