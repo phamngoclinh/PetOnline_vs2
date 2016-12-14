@@ -36,6 +36,11 @@ class Detail extends Component {
       };
   }
 
+  componentDidMount() {
+
+    console.log(this.props);
+  }
+
   render() {
     const { props: { name, index, list } } = this;
 
@@ -54,6 +59,7 @@ class Detail extends Component {
         </Header>
 
         <Content padder>
+          <Text>Data: {this.props.data}</Text>
           <Card style={{ flex: 0, marginTop: 10 }}>
               <CardItem>
                   <Thumbnail source={require('../../../images/avatar.png')} />
@@ -133,7 +139,7 @@ const mapStateToProps = state => ({
   navigation: state.cardNavigation,
   name: state.user.name,
   index: state.list.selectedIndex,
-  list: state.list.list,
+  list: state.list.list
 });
 
 
