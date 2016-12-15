@@ -68,7 +68,7 @@ class Detail extends Component {
               </CardItem>
 
               <CardItem onPress={() => this.pushRoute('detail', 2)}>                        
-                  <Image style={{ resizeMode: 'cover', width: null }} source={require('../../../images/thumbnail.jpg')} /> 
+                  <Image style={{ resizeMode: 'cover', width: null }} source={require('../../../images/pet-1.jpeg')} /> 
               </CardItem>
               <CardItem style={{flex: 0, flexDirection: 'row'}}>
                   <Button transparent>

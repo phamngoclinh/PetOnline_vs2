@@ -3,8 +3,9 @@ import React, { Component } from 'react';
 import { TouchableOpacity, Image, Modal } from 'react-native';
 import { connect } from 'react-redux';
 import { actions } from 'react-native-navigation-redux-helpers';
-import { Container, Header, Title, Content, H1, H2, H3, H4, Card, CardItem, Text, Button, Icon, InputGroup, Input, Thumbnail, List, ListItem, Spinner } from 'native-base';
+import { Container, Header, Title, Content, H1, H2, H3, H4, Card, CardItem, Text, Button, Icon, InputGroup, Input, Thumbnail, List, ListItem, Spinner, Footer, FooterTab, Badge } from 'native-base';
 import { Grid, Row } from 'react-native-easy-grid';
+import { setUser } from '../../actions/user';
 
 import { openDrawer } from '../../actions/drawer';
 import { setIndex } from '../../actions/list';
@@ -14,11 +15,14 @@ import styles from './styles';
 const {
   reset,
   pushRoute,
+  replaceAt,
 } = actions;
 
 class Home extends Component {
 
   static propTypes = {
+    setUser: React.PropTypes.func,
+    replaceAt: React.PropTypes.func,
     name: React.PropTypes.string,
     list: React.PropTypes.arrayOf(React.PropTypes.string),
     setIndex: React.PropTypes.func,
@@ -79,6 +83,15 @@ class Home extends Component {
     this.props.pushRoute({ key: route, index: 1 }, this.props.navigation.key);
   }
 
+  setUser(name) {
+    this.props.setUser(name);
+  }
+
+  replaceRoute(route) {
+    this.setUser(this.state.name);
+    this.props.replaceAt('home', { key: route }, this.props.navigation.key);
+  }
+
   search() {
       // Set loading to true when the search starts to display a Spinner
       this.setState({
@@ -130,15 +143,18 @@ class Home extends Component {
             this.state.data ?
               this.state.data.map((members, index) => {
                 return (
-                  <Card key={members.id} style={{ flex: 0, marginBottom: 10}}>
-                      <CardItem>
+                  <Card key={members.id} style={{ flex: 0, marginBottom: 10, borderWidth: .5, borderColor: '#FFFAFA'}}>
+                      <CardItem style={{backgroundColor: '#FFFFFA', borderBottomWidth: 0}}>
                           <Thumbnail source={require('../../../images/avatar.png')} />
                           <Text onPress={() => this.pushRoute('detail', 2)}>{members.title}</Text>
                           <Text note>Phạm Ngọc Linh</Text>
                       </CardItem>
 
                       <CardItem onPress={() => this.pushRoute('detail', 2)}>
-                          <Image style={{ resizeMode: 'cover', width: null}} source={{uri: members.Pet.Image.thumbnail}} />
+                          {
+                            /*<Image style={{ resizeMode: 'cover', width: null}} source={{uri: members.Pet.Image.thumbnail}} />*/
+                          }
+                          <Image style={{ resizeMode: 'cover', width: null, maxHeight: 300}} source={require('../../../images/pet-1.jpeg')} />
                       </CardItem>
 
                       <CardItem>
@@ -181,7 +197,7 @@ class Home extends Component {
                       <Image source={require('../../../images/thumbnail.jpg')}  />
                       <Text>
                       List must contain one or more list elements.
-                      Props provide configurability for several features.
+                      Props Provideside configurability for several features.
                       Provides a number of attributes that follows styling and interaction guidelines for each platform,
                       so that they are intuitive for users to interact with
                       </Text>
@@ -196,6 +212,31 @@ class Home extends Component {
           </Modal>
 
         </Content>
+
+        {
+          /*
+          <Footer >
+              <FooterTab>
+                  <Button active onPress={() => this.replaceRoute('home')}>
+                      Home
+                      <Icon name='ios-home-outline' />
+                  </Button>
+                  <Button onPress={() => this.replaceRoute('category')}>
+                      Category
+                      <Icon name='ios-camera-outline' />
+                  </Button>
+                  <Button onPress={() => this.replaceRoute('profile')}>
+                      Profile
+                      <Icon name='ios-compass' />
+                  </Button>
+                  <Button onPress={() => this.replaceRoute('logout')}>
+                      Logout
+                      <Icon name='ios-contact-outline' />
+                  </Button>
+              </FooterTab>
+          </Footer>
+          */
+        }
       </Container>
     );
   }
@@ -203,6 +244,9 @@ class Home extends Component {
 
 function bindAction(dispatch) {
   return {
+
+    replaceAt: (routeKey, route, key) => dispatch(replaceAt(routeKey, route, key)),
+    setUser: name => dispatch(setUser(name)),
     setIndex: index => dispatch(setIndex(index)),
     openDrawer: () => dispatch(openDrawer()),
     pushRoute: (route, key) => dispatch(pushRoute(route, key)),

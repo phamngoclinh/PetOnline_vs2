@@ -142,6 +142,7 @@ class AppNavigator extends Component {
           renderOverlay={this._renderOverlay}
           renderScene={this._renderScene}
         />
+        
       </Drawer>
     );
   }

@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { Image } from 'react-native';
 import { connect } from 'react-redux';
 import { actions } from 'react-native-navigation-redux-helpers';
-import { Container, Content, InputGroup, Input, Button, Icon, View } from 'native-base';
+import { Container, Content, InputGroup, Input, Button, Icon, View, Text } from 'native-base';
 
 import { setUser } from '../../actions/user';
 import styles from './styles';
@@ -12,7 +12,7 @@ const {
   replaceAt,
 } = actions;
 
-const background = require('../../../images/shadow.png');
+const background = require('../../../images/background.jpg');
 
 class Login extends Component {
 
@@ -46,21 +46,31 @@ class Login extends Component {
         <View style={styles.container}>
           <Content>
             <Image source={background} style={styles.shadow}>
-              <View style={styles.bg}>
+              <View style={styles.top}>
+                  <Image style={styles.logo} source={require('../../../images/avatar.png')}/>
+              </View>
+              <View style={styles.main}>
                 <InputGroup style={styles.input}>
-                  <Icon name="ios-person" />
-                  <Input placeholder="EMAIL" onChangeText={name => this.setState({ name })} />
+                  <Icon name="ios-person" style={{marginTop: -10, marginRight: 20, color: "#5b71ff"}}/>
+                  <Input placeholder="EMAIL" onChangeText={name => this.setState({ name })}  style={{color: '#333333'}}/>
                 </InputGroup>
                 <InputGroup style={styles.input}>
-                  <Icon name="ios-unlock-outline" />
+                  <Icon name="ios-unlock-outline" style={{marginTop: -10, marginRight: 20, color: "#5b71ff"}}/>
                   <Input
                     placeholder="PASSWORD"
                     secureTextEntry
                   />
                 </InputGroup>
-                <Button style={styles.btn} onPress={() => this.replaceRoute('home')}>
-                  Login
+                <Button style={styles.btn} bordered onPress={() => this.replaceRoute('home')}>
+                  <Text style={{color:'#FFFFFF'}}>Login</Text>
                 </Button>
+
+                <View style={styles.actions}>
+                    <Text button style={styles.forget}>Quên mật khẩu?</Text>
+                    <Text style={{alignSelf: 'center'}}>hoặc</Text>
+                    <Text button style={styles.forget}>Tạo tài khoản mới</Text>
+                </View>
+
               </View>
             </Image>
           </Content>

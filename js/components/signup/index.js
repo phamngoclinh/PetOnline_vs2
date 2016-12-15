@@ -1,8 +1,9 @@
 
 import React, { Component } from 'react';
+import { Image } from 'react-native';
 import { connect } from 'react-redux';
 import { actions } from 'react-native-navigation-redux-helpers';
-import { Container, Header, Title, Content, Text, Button, Icon } from 'native-base';
+import { Container, Content, Text, Button, View, Icon, InputGroup, Input, List, ListItem, CheckBox } from 'native-base';
 
 import { openDrawer } from '../../actions/drawer';
 import styles from './styles';
@@ -10,6 +11,8 @@ import styles from './styles';
 const {
   popRoute,
 } = actions;
+
+const background = require('../../../images/background.jpg');
 
 class Signup extends Component {
 
@@ -32,27 +35,44 @@ class Signup extends Component {
     const { props: { name, index, list } } = this;
 
     return (
-      <Container style={styles.container}>
-        <Header>
-          <Button transparent onPress={() => this.popRoute()}>
-            <Icon name="ios-arrow-back" />
-          </Button>
+      <Container>
+        <View style={styles.container}>
+          <Content>
+            <Image source={background} style={styles.shadow}>
+              <View style={styles.top}>
+                  <Image style={styles.logo} source={require('../../../images/avatar.png')}/>
+              </View>
+              <View style={styles.main}>
+                <InputGroup style={styles.input}>
+                  <Icon name="ios-person" style={{marginTop: -10, marginRight: 20, color: "#5b71ff"}}/>
+                  <Input placeholder="EMAIL" onChangeText={name => this.setState({ name })}  style={{color: '#333333'}}/>
+                </InputGroup>
+                <InputGroup style={styles.input}>
+                    <Icon name="ios-call" style={{marginTop: -10, marginRight: 20, color: "#5b71ff"}} />
+                    <Input placeholder="PHONE" keyboardType="numeric" />
+                </InputGroup>
+                <InputGroup style={styles.input}>
+                  <Icon name="ios-unlock-outline" style={{marginTop: -10, marginRight: 20, color: "#5b71ff"}}/>
+                  <Input
+                    placeholder="PASSWORD"
+                    secureTextEntry
+                  />
+                </InputGroup>
 
-          <Title>{(name) ? this.props.name : 'Blank Page'}</Title>
+                <Button style={styles.btn} bordered onPress={() => this.replaceRoute('login')}>
+                  <Text style={{color:'#FFFFFF'}}>Register</Text>
+                </Button>
 
-          <Button transparent onPress={this.props.openDrawer}>
-            <Icon name="ios-menu" />
-          </Button>
-        </Header>
+                <View style={styles.actions}>
+                    <Text button style={styles.forget}>
+                      Quay về Trang chủ
+                    </Text>
+                </View>
 
-        <Content padder>
-          <Text>
-            Singup page...
-          </Text>
-          <Text>
-            {(!isNaN(index)) ? list[index] : 'Create Something Awesome . . .'}
-          </Text>
-        </Content>
+              </View>
+            </Image>
+          </Content>
+        </View>
       </Container>
     );
   }
