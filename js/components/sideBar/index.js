@@ -1,7 +1,8 @@
 
 import React, { Component } from 'react';
+import { Image, ScrollView } from 'react-native';
 import { connect } from 'react-redux';
-import { Content, Text, List, ListItem } from 'native-base';
+import { Content, Text, List, ListItem, Card, CardItem, Thumbnail, Button, Icon, Badge } from 'native-base';
 
 import { setIndex } from '../../actions/list';
 import navigateTo from '../../actions/sideBarNav';
@@ -25,7 +26,49 @@ class SideBar extends Component {
   render() {
     return (
       <Content theme={myTheme} style={styles.sidebar} >
-        <List>
+          <Card style={styles.top}>
+              <CardItem>
+                  <Thumbnail source={require('../../../images/avatar.png')} />
+                  <Text>NativeBase</Text>
+                  <Text note>GeekyAnts</Text>
+              </CardItem>
+         </Card>
+
+        <ScrollView style={styles.middle}>
+        <List >
+            <ListItem button iconLeft onPress={() => this.navigateTo('home')}>
+                <Icon name="ios-home" style={{ color: '#0A69FE' }} />
+                <Text>Home</Text>
+            </ListItem>
+            <ListItem button iconLeft onPress={() => this.navigateTo('signin')}>
+                <Icon name="ios-log-in" style={{ color: '#0A69FE' }} />
+                <Text>Sign In</Text>
+            </ListItem>
+            <ListItem button iconLeft onPress={() => this.navigateTo('signup')}>
+                <Icon name="ios-log-in" style={{ color: '#0A69FE' }} />
+                <Text>Sign Up</Text>
+            </ListItem>
+            <ListItem button iconLeft >
+                <Icon name="ios-log-out" style={{ color: '#0A69FE' }} />
+                <Text>Sign Out</Text>
+            </ListItem>
+            <ListItem button iconLeft>
+                <Icon name="ios-plane" style={{ color: '#0A69FE' }} />
+                <Text>Forget Password</Text>
+                <Text note>Off</Text>
+            </ListItem>
+            <ListItem button iconLeft>
+                <Icon name="ios-settings-outline" style={{ color: '#0A69FE' }} />
+                <Text>Software Update</Text>
+                <Badge style={{ backgroundColor: '#8C97B5' }}>2</Badge>
+            </ListItem>
+            <ListItem button iconLeft>
+                <Icon name="ios-mail-outline" style={{ color: '#0A69FE' }} />
+                <Text>Mail</Text>
+                <Badge>12</Badge>
+            </ListItem>
+
+
           <ListItem button onPress={() => this.navigateTo('home')} >
             <Text>Home</Text>
           </ListItem>
@@ -47,10 +90,20 @@ class SideBar extends Component {
           <ListItem button onPress={() => this.navigateTo('profile')} >
             <Text>User Profile</Text>
           </ListItem>
+          <ListItem button onPress={() => this.navigateTo('search')} >
+            <Text>Search</Text>
+          </ListItem>
           <ListItem button onPress={() => this.navigateTo('blankPage')} >
             <Text>Blank Page</Text>
           </ListItem>
         </List>
+        </ScrollView>
+
+        <Card style={styles.bottom}>
+            <CardItem>
+                <Text>Copyright 2016...</Text>
+            </CardItem>
+       </Card>
       </Content>
     );
   }
