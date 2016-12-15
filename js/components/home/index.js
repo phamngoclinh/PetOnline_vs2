@@ -57,17 +57,17 @@ class Home extends Component {
 
       fetch('http://210.211.118.178/PetsAPI/api/articles/'+_this.state.categoryType, {
         method: 'GET'
-      })            
-      .then((response) => response.json())            
-      .then((responseJson) => {      
+      })
+      .then((response) => response.json())
+      .then((responseJson) => {
           // Store the results in the state variable results and set loading to
           _this.setState({
             data: responseJson,
             is_loading_data: false
           });
-      }) 
+      })
       .catch((error) => {
-          _this.setState({                    
+          _this.setState({
             loading: false
         });
           console.error(error);
@@ -80,30 +80,13 @@ class Home extends Component {
   }
 
   search() {
-      // Set loading to true when the search starts to display a Spinner        
-      this.setState({            
+      // Set loading to true when the search starts to display a Spinner
+      this.setState({
           loading: true,
-          is_loading_data: true       
+          is_loading_data: true
       });
-
-      var that = this;        
-      return fetch('https://api.github.com/search/repositories?q='+this.state.search, {
-        method: 'get'
-      })            
-      .then((response) => response.json())            
-      .then((responseJson) => {      
-          // Store the results in the state variable results and set loading to
-          that.setState({
-            results: responseJson,
-            is_loading_data: false
-          });
-      }) 
-      .catch((error) => {
-          that.setState({                    
-            loading: false
-        });
-          console.error(error);
-      });    
+      this.pushRoute('search', 3);
+      var that = this;
   }
 
   setModalVisible(visible) {
@@ -115,18 +98,19 @@ class Home extends Component {
     return (
       <Container theme={myTheme} style={styles.container}>
         {
-              
-          this.state.is_search ? 
-              (
-                <Header searchBar rounded>                            
-                <InputGroup>                        
-                    <Icon name="ios-search" />                        
-                    <Input placeholder="Search..." value={this.state.search}  onChangeText={(text) => this.setState({search:text})} onSubmitEditing={()=>this.search()}/>                    
-                </InputGroup>                    
-                <Button transparent onPress={()=>this.search()}>Go</Button>                
-            </Header>
-          )
-          : null
+
+          this.state.is_search ?
+            (
+              <Header searchBar rounded>
+                  <InputGroup>
+                      <Icon name="ios-search" />
+                      <Input placeholder="Search..." value={this.state.search}  onChangeText={(text) => this.setState({search:text})} onSubmitEditing={()=>this.search()}/>
+                      <Button transparent onPress={()=> this.setState({is_search: false})}>Close</Button>
+                  </InputGroup>
+                  <Button transparent>Search</Button>
+              </Header>
+            )
+            : null
         }
 
         <Header>
@@ -142,19 +126,8 @@ class Home extends Component {
         </Header>
 
         <Content padder>
-          {this.state.is_loading_data ? <Spinner color='blue' visible={this.state.is_loading_data} /> : null}
-
-         <List dataArray={this.state.results.items} renderRow={(item) =>               
-              <ListItem button onPress={()=>this.setModalVisible(true, item)}> 
-                  <Thumbnail square size={80} source={{uri: item.owner.avatar_url}} />
-                  <Text>Name: <Text style={{fontWeight: '600', color: '#46ee4b'}}>{item.name}</Text></Text>
-                  <Text style={{color:'#007594'}}>{item.full_name}</Text>    
-                  <Text note>Score: <Text note style={{marginTop: 5}}>{item.score}</Text></Text>    
-              </ListItem>                            
-          } />
-
           {
-            this.state.data ? 
+            this.state.data ?
               this.state.data.map((members, index) => {
                 return (
                   <Card key={members.id} style={{ flex: 0, marginBottom: 10}}>
@@ -164,11 +137,11 @@ class Home extends Component {
                           <Text note>Phạm Ngọc Linh</Text>
                       </CardItem>
 
-                      <CardItem onPress={() => this.pushRoute('detail', 2)}>                        
-                          <Image style={{ resizeMode: 'cover', width: null }} source={{uri: members.Pet.Image.thumbnail}} /> 
+                      <CardItem onPress={() => this.pushRoute('detail', 2)}>
+                          <Image style={{ resizeMode: 'cover', width: null}} source={{uri: members.Pet.Image.thumbnail}} />
                       </CardItem>
 
-                      <CardItem>                        
+                      <CardItem>
                           <Text>
                               {members.content}
                           </Text>

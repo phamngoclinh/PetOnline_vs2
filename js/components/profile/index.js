@@ -50,7 +50,7 @@ class Profile extends Component {
         </Header>
 
         <Content style={{flex: 0, flexDirection: 'row', height: ScreenHeight - 80}}>
-          <View style={{backgroundColor: '#0000ff', alignItems: 'center', padding: 10, flex: 1, width: ScreenWidth}}>
+          <View style={styles.top}>
             <Thumbnail size={100} source={require('../../../images/avatar.png')} />
             <Text style={{color: '#ffffff'}}>Phạm Ngọc Linh</Text>
             <Text note style={{color: '#ffffff'}}>Email: pnlinh93@gmail.com</Text>

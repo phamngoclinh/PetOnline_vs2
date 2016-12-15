@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { actions } from 'react-native-navigation-redux-helpers';
-import { Container, Header, Title, Content, Text, Button, Icon, Grid, Col } from 'native-base';
+import { Container, Header, Title, Content, Text, Button, Icon, Grid, Col, InputGroup, Input } from 'native-base';
 import { View, Dimensions } from 'react-native';
 
 import { openDrawer } from '../../actions/drawer';
@@ -32,6 +32,26 @@ class Category extends Component {
     }),
   }
 
+  constructor(props) {
+      super(props);
+      this.state = {
+          is_search: false
+      };
+
+      this.search = this.search.bind(this);
+  }
+
+
+  search() {
+    // Set loading to true when the search starts to display a Spinner
+    this.setState({
+        loading: true,
+        is_loading_data: true
+    });
+    this.pushRoute('search', 3);
+    var that = this;
+  }
+
   popRoute() {
     this.props.popRoute(this.props.navigation.key);
   }
@@ -46,12 +66,32 @@ class Category extends Component {
 
     return (
       <Container style={styles.container}>
+        {
+
+          this.state.is_search ?
+            (
+              <Header searchBar rounded>
+                  <InputGroup>
+                      <Icon name="ios-search" />
+                      <Input placeholder="Search..." value={this.state.search}  onChangeText={(text) => this.setState({search:text})} onSubmitEditing={()=>this.search()}/>
+                      <Button transparent onPress={()=> this.setState({is_search: false})}>Close</Button>
+                  </InputGroup>
+                  <Button transparent>Search</Button>
+              </Header>
+            )
+            : null
+        }
+
         <Header>
           <Button transparent onPress={() => this.popRoute()}>
             <Icon name="ios-arrow-back" />
           </Button>
 
           <Title>{(name) ? this.props.name : 'Category'}</Title>
+
+          <Button transparent onPress={() => this.setState({is_search: true})}>
+              <Icon name="ios-search" />
+          </Button>
 
           <Button transparent onPress={this.props.openDrawer}>
             <Icon name="ios-menu" />

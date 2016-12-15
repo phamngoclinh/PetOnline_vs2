@@ -35,68 +35,53 @@ class SideBar extends Component {
          </Card>
 
         <ScrollView style={styles.middle}>
-        <List >
-            <ListItem button iconLeft onPress={() => this.navigateTo('home')}>
-                <Icon name="ios-home" style={{ color: '#0A69FE' }} />
-                <Text>Home</Text>
-            </ListItem>
-            <ListItem button iconLeft onPress={() => this.navigateTo('signin')}>
-                <Icon name="ios-log-in" style={{ color: '#0A69FE' }} />
-                <Text>Sign In</Text>
-            </ListItem>
-            <ListItem button iconLeft onPress={() => this.navigateTo('signup')}>
-                <Icon name="ios-log-in" style={{ color: '#0A69FE' }} />
-                <Text>Sign Up</Text>
-            </ListItem>
-            <ListItem button iconLeft >
-                <Icon name="ios-log-out" style={{ color: '#0A69FE' }} />
-                <Text>Sign Out</Text>
-            </ListItem>
-            <ListItem button iconLeft>
-                <Icon name="ios-plane" style={{ color: '#0A69FE' }} />
-                <Text>Forget Password</Text>
-                <Text note>Off</Text>
-            </ListItem>
-            <ListItem button iconLeft>
-                <Icon name="ios-settings-outline" style={{ color: '#0A69FE' }} />
-                <Text>Software Update</Text>
-                <Badge style={{ backgroundColor: '#8C97B5' }}>2</Badge>
-            </ListItem>
-            <ListItem button iconLeft>
-                <Icon name="ios-mail-outline" style={{ color: '#0A69FE' }} />
-                <Text>Mail</Text>
-                <Badge>12</Badge>
-            </ListItem>
-
-
-          <ListItem button onPress={() => this.navigateTo('home')} >
-            <Text>Home</Text>
-          </ListItem>
-          <ListItem button onPress={() => this.navigateTo('signup')} >
-            <Text>Signup</Text>
-          </ListItem>
-          <ListItem button onPress={() => this.navigateTo('login')} >
-            <Text>Login</Text>
-          </ListItem>
-          <ListItem button onPress={() => this.navigateTo('forgetPassword')} >
-            <Text>Forget password</Text>
-          </ListItem>
-          <ListItem button onPress={() => this.navigateTo('category')} >
-            <Text>Category</Text>
-          </ListItem>
-          <ListItem button onPress={() => this.navigateTo('detail')} >
-            <Text>Detail</Text>
-          </ListItem>
-          <ListItem button onPress={() => this.navigateTo('profile')} >
-            <Text>User Profile</Text>
-          </ListItem>
-          <ListItem button onPress={() => this.navigateTo('search')} >
-            <Text>Search</Text>
-          </ListItem>
-          <ListItem button onPress={() => this.navigateTo('blankPage')} >
-            <Text>Blank Page</Text>
-          </ListItem>
-        </List>
+            <List>
+                <ListItem button iconLeft onPress={() => this.navigateTo('home')}>
+                    <Icon name="ios-home" style={{ color: '#0A69FE' }} />
+                    <Text>Home</Text>
+                </ListItem>
+                <ListItem button iconLeft onPress={() => this.navigateTo('signin')}>
+                    <Icon name="ios-log-in" style={{ color: '#0A69FE' }} />
+                    <Text>Sign In</Text>
+                </ListItem>
+                <ListItem button iconLeft onPress={() => this.navigateTo('signup')}>
+                    <Icon name="ios-log-in" style={{ color: '#0A69FE' }} />
+                    <Text>Sign Up</Text>
+                </ListItem>
+                <ListItem button iconLeft >
+                    <Icon name="ios-log-out" style={{ color: '#0A69FE' }} />
+                    <Text>Sign Out</Text>
+                </ListItem>
+                <ListItem button iconLeft onPress={() => this.navigateTo('forgetPassword')}>
+                    <Icon name="ios-plane" style={{ color: '#0A69FE' }} />
+                    <Text>Forget Password</Text>
+                    <Text note>Off</Text>
+                </ListItem>
+                <ListItem button iconLeft onPress={() => this.navigateTo('category')}>
+                    <Icon name="ios-settings-outline" style={{ color: '#0A69FE' }} />
+                    <Text>Category</Text>
+                    <Badge style={{ backgroundColor: '#8C97B5' }}>2</Badge>
+                </ListItem>
+                <ListItem button iconLeft onPress={() => this.navigateTo('detail')}>
+                    <Icon name="ios-settings-outline" style={{ color: '#0A69FE' }} />
+                    <Text>Detail</Text>
+                    <Badge style={{ backgroundColor: '#8C97B5' }}>2</Badge>
+                </ListItem>
+                <ListItem button iconLeft onPress={() => this.navigateTo('profile')}>
+                    <Icon name="ios-settings-outline" style={{ color: '#0A69FE' }} />
+                    <Text>User profile</Text>
+                    <Badge style={{ backgroundColor: '#8C97B5' }}>2</Badge>
+                </ListItem>
+                <ListItem button iconLeft onPress={() => this.navigateTo('search')}>
+                    <Icon name="ios-settings-outline" style={{ color: '#0A69FE' }} />
+                    <Text>Search</Text>
+                    <Badge style={{ backgroundColor: '#8C97B5' }}>2</Badge>
+                </ListItem>
+                <ListItem button iconLeft onPress={() => this.navigateTo('blankPage')}>
+                    <Icon name="ios-settings-outline" style={{ color: '#0A69FE' }} />
+                    <Text>Blank Page</Text>
+                </ListItem>
+            </List>
         </ScrollView>
 
         <Card style={styles.bottom}>

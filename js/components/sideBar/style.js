@@ -16,19 +16,19 @@ module.exports = StyleSheet.create({
 
   top: {
     width: ScreenWidth - 0.2 * ScreenWidth,
-    flex: 1,
+    flex: 2,
     maxHeight: 70,
     backgroundColor: '#333',
   },
 
   middle: {
-    flex: 5,
+    flex: 8,
     backgroundColor: '#ccc',
   },
 
   bottom: {
     flex: 1,
     // alignSelf: 'flex-end',
-    backgroundColor: '#900'
+    backgroundColor: '#333'
   }
 });
