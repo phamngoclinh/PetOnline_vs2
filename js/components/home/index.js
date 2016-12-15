@@ -154,14 +154,29 @@ class Home extends Component {
                           {
                             /*<Image style={{ resizeMode: 'cover', width: null}} source={{uri: members.Pet.Image.thumbnail}} />*/
                           }
-                          <Image style={{ resizeMode: 'cover', width: null, maxHeight: 300}} source={require('../../../images/pet-1.jpeg')} />
+                          <Content style={{
+                            position: 'absolute',
+                            top:10,
+                            right:10,
+                            width: null,
+                            height: null,
+                            zIndex: 1,
+                            flex: 1,
+                            flexWrap:'wrap',
+                            flexDirection: 'row'
+                          }}>
+                            <Button bordered style={{backgroundColor: 'rgba(0,0,0,.2)', width: 40, height: 40, marginBottom: 5, alignSelf: 'flex-end', borderColor: '#FFFFFF', borderWidth: .5}}><Icon name='ios-thumbs-up-outline' style={{color: '#FFFFFF'}}/></Button>
+                            <Button bordered style={{backgroundColor: 'rgba(0,0,0,.2)', width: 40, height: 40, marginBottom: 5, alignSelf: 'flex-end', borderColor: '#FFFFFF', borderWidth: .5}}><Icon name='ios-heart-outline' style={{color: '#FFFFFF'}}/></Button>
+                            <Button bordered style={{backgroundColor: 'rgba(0,0,0,.2)', width: 40, height: 40, marginBottom: 5, alignSelf: 'flex-end', borderColor: '#FFFFFF', borderWidth: .5}}><Icon name='ios-star' style={{color: '#FFFFFF'}}/></Button>
+                          </Content>
+                          <Image style={{ zIndex: 0, resizeMode: 'cover', width: null, maxHeight: 300}} source={require('../../../images/pet-1.jpeg')} />
                       </CardItem>
 
                       <CardItem>
                           <Text>
                               {members.content}
                           </Text>
-                          <Text>Ngày đăng: {members.createdOn}</Text>
+                          <Text note>Ngày đăng: {members.createdOn}</Text>
                       </CardItem>
 
                       <CardItem style={{flex: 0, flexDirection: 'row'}}>
@@ -173,8 +188,8 @@ class Home extends Component {
                               <Icon name="ios-heart" />
                               Chó / Mèo / ...
                           </Button>
-                          <Button onPress={() => {this.setModalVisible(true)}}>
-                              <Icon name="ios-share" />
+                          <Button rounded danger onPress={() => {this.setModalVisible(true)}}>
+                              <Icon name="ios-call" />
                               CALL NOW
                           </Button>
                       </CardItem>
