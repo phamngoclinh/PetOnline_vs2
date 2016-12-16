@@ -28,7 +28,13 @@ class Login extends Component {
     super(props);
     this.state = {
       name: '',
+      username: '',
+      password: ''
     };
+  }
+
+  componentDidMount() {
+
   }
 
   setUser(name) {
@@ -52,15 +58,17 @@ class Login extends Component {
               <View style={styles.main}>
                 <InputGroup style={styles.input}>
                   <Icon name="ios-person" style={{marginTop: -10, marginRight: 20, color: "#5b71ff"}}/>
-                  <Input placeholder="EMAIL" onChangeText={name => this.setState({ name })}  style={{color: '#333333'}}/>
+                  <Input placeholder="EMAIL" onChangeText={username => this.setState({ username })}  style={{color: '#333333'}}/>
                 </InputGroup>
                 <InputGroup style={styles.input}>
                   <Icon name="ios-unlock-outline" style={{marginTop: -10, marginRight: 20, color: "#5b71ff"}}/>
                   <Input
                     placeholder="PASSWORD"
                     secureTextEntry
+                    onChangeText={password => this.setState({ password })}
                   />
                 </InputGroup>
+
                 <Button style={styles.btn} bordered onPress={() => this.replaceRoute('home')}>
                   <Text style={{color:'#FFFFFF'}}>Login</Text>
                 </Button>

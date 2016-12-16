@@ -1,9 +1,9 @@
 
 import React, { Component } from 'react';
-import { Image } from 'react-native';
+import { Image, Alert } from 'react-native';
 import { connect } from 'react-redux';
 import { actions } from 'react-native-navigation-redux-helpers';
-import { Container, Content, Text, Button, View, Icon, InputGroup, Input, List, ListItem, CheckBox } from 'native-base';
+import { Container, Content, Text, Button, View, Icon, InputGroup, Input, List, ListItem, CheckBox, Spinner } from 'native-base';
 
 import { openDrawer } from '../../actions/drawer';
 import styles from './styles';
@@ -25,6 +25,93 @@ class Signup extends Component {
     navigation: React.PropTypes.shape({
       key: React.PropTypes.string,
     }),
+
+    username: React.PropTypes.string,
+    phone: React.PropTypes.number,
+    password: React.PropTypes.string
+  }
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: '',
+      username: '',
+      phone: '',
+      password: '',
+      is_loading: true,
+      data : null
+    };
+  }
+
+  componentDidMount() {
+    let _this = this;
+
+    _this.setState({
+      is_loading: false
+    });
+  }
+
+  signup() {
+    let _this = this;
+
+    if(this.state.username == '' || this.state.phone == '' || this.state.password == '') {
+      Alert.alert(
+        "Cảnh báo",
+        "Vui lòng nhập đầy đủ các ô trên màn hình!",
+        [
+          {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'}
+        ]
+      );
+    } else {
+      Alert.alert(
+        "Xác nhận",
+        "Tôi hoàn toàn đồng ý với mọi quy định của ứng dụng",
+        [
+          {text: 'Tìm hiểu thêm', onPress: () => console.log('Ask me later pressed')},
+          {text: 'OK', onPress: () => console.log('OK Pressed')},
+        ]
+      );
+
+      _this.setState({
+        is_loading: true
+      });
+      // ...
+      fetch('http://210.211.118.178/PetsAPI/api/userauthinfos', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          "email": "huynhducdangkhoa1@gmail.com",
+          "phone": "09853641321",
+          "firstName": "Khoa",
+          "lastName": "Huynh"
+
+        })
+      })
+      .then((response) => response.json())
+      .then((responseJson) => {
+          // Store the results in the state variable results and set loading to
+          _this.setState({
+            data: responseJson,
+            is_loading: false
+          });
+
+          console.log(responseJson);
+
+          _this.popRoute();
+
+          // alert('Success: ' + responseJson);
+      })
+      .catch((error) => {
+          _this.setState({
+              is_loading: false
+          });
+          console.error(error);
+      });
+
+    }
   }
 
   popRoute() {
@@ -45,29 +132,31 @@ class Signup extends Component {
               <View style={styles.main}>
                 <InputGroup style={styles.input}>
                   <Icon name="ios-person" style={{marginTop: -10, marginRight: 20, color: "#5b71ff"}}/>
-                  <Input placeholder="EMAIL" onChangeText={name => this.setState({ name })}  style={{color: '#333333'}}/>
+                  <Input placeholder="EMAIL" onChangeText={username => this.setState({ username })}  style={{color: '#333333'}}/>
                 </InputGroup>
                 <InputGroup style={styles.input}>
                     <Icon name="ios-call" style={{marginTop: -10, marginRight: 20, color: "#5b71ff"}} />
-                    <Input placeholder="PHONE" keyboardType="numeric" />
+                    <Input placeholder="PHONE" keyboardType="numeric"
+                      onChangeText={phone => this.setState({ phone })} />
                 </InputGroup>
                 <InputGroup style={styles.input}>
                   <Icon name="ios-unlock-outline" style={{marginTop: -10, marginRight: 20, color: "#5b71ff"}}/>
                   <Input
                     placeholder="PASSWORD"
                     secureTextEntry
+                    onChangeText={password => this.setState({ password })}
                   />
                 </InputGroup>
 
-                <Button style={styles.btn} bordered onPress={() => this.replaceRoute('login')}>
+                <Button rounded style={{width: 250, height: 50, alignSelf: 'center', marginBottom: 20, marginTop: 30}} onPress={() => this.signup()}>
                   <Text style={{color:'#FFFFFF'}}>Register</Text>
                 </Button>
 
-                <View style={styles.actions}>
-                    <Text button style={styles.forget}>
-                      Quay về Trang chủ
-                    </Text>
-                </View>
+                <Button rounded bordered danger style={{width: 250, height: 50, alignSelf: 'center', marginBottom: 30}} onPress={() => this.replaceRoute('login')}>
+                  Back to login
+                </Button>
+
+                {this.state.is_loading ? <Spinner color='blue' visible={this.state.is_loading} /> : null}
 
               </View>
             </Image>
