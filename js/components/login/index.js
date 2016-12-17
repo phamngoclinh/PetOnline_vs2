@@ -303,7 +303,7 @@ class Login extends Component {
           <Content>
             <Image source={background} style={styles.shadow}>
               <View style={styles.top}>
-                  <Image style={styles.logo} source={require('../../../images/avatar.png')}/>
+                  <Image style={styles.logo} source={require('../../../images/logo-2.png')}/>
               </View>
               <View style={styles.main}>
                 <InputGroup style={styles.input}>
@@ -324,9 +324,8 @@ class Login extends Component {
                 </Button>
 
                 <View style={styles.actions}>
-                    <Button transparent small style={styles.forget} onPress={() => {this.setModalVisible(true)}}><Text style={{color: '#FFFFFF'}}>Quên mật khẩu?</Text></Button>
-                    <Text style={{alignSelf: 'center', color: '#FFFFFF'}}>hoặc</Text>
-                    <Button transparent small style={styles.forget} onPress={() => this.replaceRoute('signup')}><Text style={{color: '#FFFFFF'}}>Tạo tài khoản mới</Text></Button>
+                    <Button bordered rounded warning style={styles.forget} onPress={() => {this.setModalVisible(true)}}><Text style={{color: '#f0ad4e'}}>Quên mật khẩu?</Text></Button>
+                    <Button bordered rounded success style={styles.forget} onPress={() => this.replaceRoute('signup')}><Text style={{color: '#5cb85c'}}>Tạo tài khoản mới</Text></Button>
                 </View>
 
                 {this.state.is_loading ? <Spinner color='blue' visible={this.state.is_loading} /> : null}

@@ -37,16 +37,18 @@ module.exports = StyleSheet.create({
     paddingRight: 10,
     paddingBottom: 30,
     bottom: 0,
-    maxWidth: deviceWidth / 2.75,
-    minWidth: 350,
+    maxWidth: deviceWidth / 1.75,
+    minWidth: 400,
     alignSelf: 'center',
   },
   forget: {
     alignSelf: 'center',
-
+    width: 300,
+    height: 50,
+    marginBottom: 20
   },
   actions: {
-    marginTop: 50
+    marginTop: 20
   },
   input: {
     marginBottom: 20,
@@ -54,7 +56,7 @@ module.exports = StyleSheet.create({
   },
   btn: {
     marginTop: 20,
-    width: 200,
+    width: 300,
     height: 50,
     borderRadius: 50,
     alignSelf: 'center',
