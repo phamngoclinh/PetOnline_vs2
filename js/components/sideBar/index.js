@@ -36,6 +36,15 @@ class SideBar extends Component {
 
         <ScrollView style={styles.middle}>
             <List>
+                <ListItem button iconLeft onPress={() => this.navigateTo('createPet')}>
+                    <Icon name="ios-home" style={{ color: '#0A69FE' }} />
+                    <Text>Create Pet</Text>
+                </ListItem>
+                <ListItem button iconLeft onPress={() => this.navigateTo('createArticle')}>
+                    <Icon name="ios-home" style={{ color: '#0A69FE' }} />
+                    <Text>Create Article</Text>
+                </ListItem>
+
                 <ListItem button iconLeft onPress={() => this.navigateTo('home')}>
                     <Icon name="ios-home" style={{ color: '#0A69FE' }} />
                     <Text>Home</Text>

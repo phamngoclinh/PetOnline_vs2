@@ -15,6 +15,8 @@ import Category from './components/category/';
 import Detail from './components/detail/';
 import Profile from './components/profile/';
 import Search from './components/search';
+import CreatePet from './components/createPet/';
+import CreateArticle from './components/createArticle/';
 import BlankPage from './components/blankPage';
 import SplashPage from './components/splashscreen/';
 import SideBar from './components/sideBar';
@@ -97,6 +99,10 @@ class AppNavigator extends Component {
         return <Profile />;
       case 'search':
         return <Search />;
+      case 'createPet':
+        return <CreatePet />;
+      case 'createArticle':
+        return <CreateArticle />;
       case 'blankPage':
         return <BlankPage />;
       default :

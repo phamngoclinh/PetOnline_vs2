@@ -18,6 +18,10 @@ const {
   replaceAt,
 } = actions;
 
+const apiLink = 'http://210.211.118.178/PetsAPI/';
+const petAlbum = 'http://210.211.118.178/PetsAPI/Images/PetThumbnails/';
+const userAlbum = 'http://210.211.118.178/PetsAPI/Images/UserThumbnails/';
+
 class Home extends Component {
 
   static propTypes = {
@@ -45,9 +49,11 @@ class Home extends Component {
         modalVisible: false,
         selectedItem: {},
         search: '',
-          loading: false,
-          is_loading_data: false,
-          is_search: false
+        loading: false,
+        is_loading_data: false,
+        is_search: false,
+        skip: 0,
+        limit: 10
       };
 
       this.search = this.search.bind(this);
@@ -59,7 +65,7 @@ class Home extends Component {
         is_loading_data: true
       });
 
-      fetch('http://210.211.118.178/PetsAPI/api/articles/'+_this.state.categoryType, {
+      fetch('http://210.211.118.178/PetsAPI/api/articles/'+_this.state.categoryType+'/'+_this.state.skip+'/'+_this.state.limit, {
         method: 'GET'
       })
       .then((response) => response.json())
@@ -145,52 +151,46 @@ class Home extends Component {
                 return (
                   <Card key={members.id} style={{ flex: 0, marginBottom: 10, borderWidth: .5, borderColor: '#FFFAFA'}}>
                       <CardItem style={{backgroundColor: '#FFFFFA', borderBottomWidth: 0}}>
-                          <Thumbnail source={require('../../../images/avatar.png')} />
+                          <Thumbnail source={{uri : userAlbum + members.Pet.User.avatarThumbnail}} />
                           <Text onPress={() => this.pushRoute('detail', 2)}>{members.title}</Text>
-                          <Text note>Phạm Ngọc Linh</Text>
+                          <Text note>{members.Pet.User.firstName} {members.Pet.User.lastName}</Text>
                       </CardItem>
 
                       <CardItem onPress={() => this.pushRoute('detail', 2)}>
                           {
                             /*<Image style={{ resizeMode: 'cover', width: null}} source={{uri: members.Pet.Image.thumbnail}} />*/
                           }
-                          <Content style={{
-                            position: 'absolute',
-                            top:10,
-                            right:10,
-                            width: null,
-                            height: null,
-                            zIndex: 1,
-                            flex: 1,
-                            flexWrap:'wrap',
-                            flexDirection: 'row'
-                          }}>
-                            <Button bordered style={{backgroundColor: 'rgba(0,0,0,.2)', width: 40, height: 40, marginBottom: 5, alignSelf: 'flex-end', borderColor: '#FFFFFF', borderWidth: .5}}><Icon name='ios-thumbs-up-outline' style={{color: '#FFFFFF'}}/></Button>
-                            <Button bordered style={{backgroundColor: 'rgba(0,0,0,.2)', width: 40, height: 40, marginBottom: 5, alignSelf: 'flex-end', borderColor: '#FFFFFF', borderWidth: .5}}><Icon name='ios-heart-outline' style={{color: '#FFFFFF'}}/></Button>
-                            <Button bordered style={{backgroundColor: 'rgba(0,0,0,.2)', width: 40, height: 40, marginBottom: 5, alignSelf: 'flex-end', borderColor: '#FFFFFF', borderWidth: .5}}><Icon name='ios-star' style={{color: '#FFFFFF'}}/></Button>
+                          <Content style={styles.socialSection}>
+                            <Button bordered style={styles.socialButton}><Icon name='ios-thumbs-up-outline' style={{color: '#FFFFFF'}}/></Button>
+                            <Button bordered style={styles.socialButton}><Icon name='ios-heart-outline' style={{color: '#FFFFFF'}}/></Button>
+                            <Button bordered style={styles.socialButton}><Icon name='ios-star' style={{color: '#FFFFFF'}}/></Button>
                           </Content>
-                          <Image style={{ zIndex: 0, resizeMode: 'cover', width: null, maxHeight: 300}} source={require('../../../images/pet-1.jpeg')} />
+                          <Image style={styles.mainPicture} source={{uri : petAlbum + members.Pet.Image.thumbnail}} />
                       </CardItem>
 
                       <CardItem>
                           <Text>
                               {members.content}
                           </Text>
-                          <Text note>Ngày đăng: {members.createdOn}</Text>
+                          <Text note>
+                            <Icon name="ios-calendar-outline" style={{marginRight: 10}}/>
+                            Ngày đăng: {members.createdOn}
+                          </Text>
+                          <Text note>
+                            <Icon name="ios-eye-outline" style={{marginRight: 10}}/>
+                            Lượt xem: {members.view}
+                          </Text>
                       </CardItem>
 
                       <CardItem style={{flex: 0, flexDirection: 'row'}}>
                           <Button transparent>
-                              <Icon name="ios-eye-outline" />
-                              <Text>Lượt xem: {members.view} </Text>
+                              <Icon name="ios-pricetag-outline" />
+                              <Text>Giá bán: {members.price} VNĐ</Text>
                           </Button>
-                          <Button transparent>
-                              <Icon name="ios-heart" />
-                              Chó / Mèo / ...
-                          </Button>
+                          
                           <Button rounded danger onPress={() => {this.setModalVisible(true)}}>
                               <Icon name="ios-call" />
-                              CALL NOW
+                              {members.Pet.User.phone}
                           </Button>
                       </CardItem>
                  </Card>
