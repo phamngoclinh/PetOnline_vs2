@@ -10,6 +10,7 @@ import styles from './styles';
 
 const {
   popRoute,
+  replaceAt,
 } = actions;
 
 const background = require('../../../images/background.jpg');
@@ -22,6 +23,7 @@ class Signup extends Component {
     list: React.PropTypes.arrayOf(React.PropTypes.string),
     openDrawer: React.PropTypes.func,
     popRoute: React.PropTypes.func,
+    replaceAt: React.PropTypes.func,
     navigation: React.PropTypes.shape({
       key: React.PropTypes.string,
     }),
@@ -51,6 +53,12 @@ class Signup extends Component {
     });
   }
 
+  replaceRoute(route) {
+    this.props.replaceAt('signup', { key: route }, this.props.navigation.key);
+  }
+
+
+
   signup() {
     let _this = this;
 
@@ -63,15 +71,6 @@ class Signup extends Component {
         ]
       );
     } else {
-      Alert.alert(
-        "Xác nhận",
-        "Tôi hoàn toàn đồng ý với mọi quy định của ứng dụng",
-        [
-          {text: 'Tìm hiểu thêm', onPress: () => console.log('Ask me later pressed')},
-          {text: 'OK', onPress: () => console.log('OK Pressed')},
-        ]
-      );
-
       _this.setState({
         is_loading: true
       });
@@ -83,31 +82,58 @@ class Signup extends Component {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          "email": "huynhducdangkhoa1@gmail.com",
-          "phone": "09853641321",
-          "firstName": "Khoa",
-          "lastName": "Huynh"
-
+          "email": this.state.username,
+          "phone": this.state.phone,
+          "firstName": "Linh",
+          "lastName": "Pham",
+          "passwordHash": this.state.password
         })
       })
       .then((response) => response.json())
       .then((responseJson) => {
           // Store the results in the state variable results and set loading to
-          _this.setState({
-            data: responseJson,
-            is_loading: false
-          });
-
           console.log(responseJson);
 
-          _this.popRoute();
+          if(responseJson.errorCode) {
+            console.log("Code: "+ responseJson.errorMsg);
+            _this.setState({
+              is_loading: false
+            });
+            Alert.alert(
+              "Lỗi",
+              responseJson.errorMsg,
+              [
+                {text: 'Quay lại', onPress: () => console.log('Quay lại pressed'), style: 'cancel'}
+              ]
+            );
+          } else {
+            _this.setState({
+              data: responseJson,
+              is_loading: false
+            });
 
-          // alert('Success: ' + responseJson);
+            Alert.alert(
+              "Đăng ký thành công",
+              "Tôi hoàn toàn đồng ý với mọi quy định của ứng dụng",
+              [
+                {text: 'Tìm hiểu thêm', onPress: () => console.log('Ask me later pressed')},
+                {text: 'OK', onPress: () => this.replaceRoute('login')},
+              ]
+            );
+          }
       })
       .catch((error) => {
           _this.setState({
               is_loading: false
           });
+          Alert.alert(
+            "Lỗi",
+            "Lỗi phát sinh trong quá trình đăng ký. Vui lòng thử lại!",
+            [
+              {text: 'Tìm hiểu thêm', onPress: () => console.log('Tìm hiểu thêm pressed')},
+              {text: 'OK', onPress: () => console.log('OK Pressed')},
+            ]
+          );
           console.error(error);
       });
 
@@ -152,7 +178,8 @@ class Signup extends Component {
                   <Text style={{color:'#FFFFFF'}}>Register</Text>
                 </Button>
 
-                <Button rounded bordered danger style={{width: 250, height: 50, alignSelf: 'center', marginBottom: 30}} onPress={() => this.replaceRoute('login')}>
+                <Button rounded bordered danger style={{width: 250, height: 50, alignSelf: 'center', marginBottom: 30}}
+                  onPress={() => this.replaceRoute('login')}>
                   Back to login
                 </Button>
 
@@ -169,6 +196,7 @@ class Signup extends Component {
 
 function bindAction(dispatch) {
   return {
+    replaceAt: (routeKey, route, key) => dispatch(replaceAt(routeKey, route, key)),
     openDrawer: () => dispatch(openDrawer()),
     popRoute: key => dispatch(popRoute(key)),
   };
