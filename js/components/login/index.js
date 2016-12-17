@@ -324,9 +324,9 @@ class Login extends Component {
                 </Button>
 
                 <View style={styles.actions}>
-                    <Text button style={styles.forget} onPress={() => {this.setModalVisible(true)}}>Quên mật khẩu?</Text>
-                    <Text style={{alignSelf: 'center'}}>hoặc</Text>
-                    <Text button style={styles.forget} onPress={() => this.replaceRoute('signup')}>Tạo tài khoản mới</Text>
+                    <Button transparent small style={styles.forget} onPress={() => {this.setModalVisible(true)}}><Text style={{color: '#FFFFFF'}}>Quên mật khẩu?</Text></Button>
+                    <Text style={{alignSelf: 'center', color: '#FFFFFF'}}>hoặc</Text>
+                    <Button transparent small style={styles.forget} onPress={() => this.replaceRoute('signup')}><Text style={{color: '#FFFFFF'}}>Tạo tài khoản mới</Text></Button>
                 </View>
 
                 {this.state.is_loading ? <Spinner color='blue' visible={this.state.is_loading} /> : null}
@@ -347,69 +347,74 @@ class Login extends Component {
                  {
                     this.state.confirmotp ? (
                       <View style={styles.forgetForm}>
-                          <Text>
-                            Forget password
-                          </Text>
+                          <View style={styles.wrapperFormForget}>
+                              <Text>
+                                Forget password
+                              </Text>
 
-                          {this.state.is_submit_forget ? <Spinner color='blue' visible={this.state.is_submit_forget} /> : null}
+                              {this.state.is_submit_forget ? <Spinner color='blue' visible={this.state.is_submit_forget} /> : null}
 
-                          <InputGroup borderType='underline' style={{marginTop: 30}}>
-                              <Icon name='ios-mail' style={{color:'#384850', marginTop: -5, marginRight: 15}}/>
-                              <Input
-                                placeholder='Enter your email or phone...'
-                                onChangeText={emailForget => this.setState({ emailForget })} />
-                          </InputGroup>
+                              <InputGroup borderType='underline' style={{marginTop: 30}}>
+                                  <Icon name='ios-mail' style={{color:'#384850', marginTop: -5, marginRight: 15}}/>
+                                  <Input
+                                    placeholder='Enter your email or phone...'
+                                    onChangeText={emailForget => this.setState({ emailForget })} />
+                              </InputGroup>
 
-                          <View style={{ marginTop: 30, flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
-                            <View>
-                              <Button bordered danger onPress={() => {
-                                this.setModalVisible(!this.state.modalVisible, this.state.selectedItem)
-                                 }}>
-                                  Go Back
-                              </Button>
-                            </View>
+                              <View style={{ marginTop: 30, flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <View>
+                                  <Button bordered danger onPress={() => {
+                                    this.setModalVisible(!this.state.modalVisible, this.state.selectedItem)
+                                     }}>
+                                      Go Back
+                                  </Button>
+                                </View>
 
-                            <View>
-                              <Button success style={{alignSelf: 'flex-end'}} onPress={() => this.getOptCode()}>
-                                  Submit
-                              </Button>
-                            </View>
+                                <View>
+                                  <Button success style={{alignSelf: 'flex-end'}} onPress={() => this.getOptCode()}>
+                                      Submit
+                                  </Button>
+                                </View>
+                              </View>
                           </View>
                       </View>
                     ) : (
                       <View style={styles.forgetForm}>
-                          <Text>
-                              Enter your password
-                          </Text>
+                          <View style={styles.wrapperFormForget}>
+                              <Text>
+                                  Enter your password
+                              </Text>
 
-                          {this.state.is_submit_forget ? <Spinner color='blue' visible={this.state.is_submit_forget} /> : null}
+                              {this.state.is_submit_forget ? <Spinner color='blue' visible={this.state.is_submit_forget} /> : null}
 
-                          <InputGroup borderType='underline' style={{marginTop: 30}}>
-                              <Icon name='ios-key-outline' style={{color:'#384850', marginTop: -5, marginRight: 15}}/>
-                              <Input
-                                placeholder='OTP Code'
-                                onChangeText={otpcode => this.setState({ otpcode })} />
-                          </InputGroup>
+                              <InputGroup borderType='underline' style={{marginTop: 30}}>
+                                  <Icon name='ios-key-outline' style={{color:'#384850', marginTop: -5, marginRight: 15}}/>
+                                  <Input
+                                    placeholder='OTP Code'
+                                    onChangeText={otpcode => this.setState({ otpcode })} />
+                              </InputGroup>
 
-                          <InputGroup borderType='underline' style={{marginTop: 30}}>
-                              <Icon name='ios-unlock-outline' style={{color:'#384850', marginTop: -5, marginRight: 15}}/>
-                              <Input
-                                placeholder='New Password'
-                                onChangeText={newPassword => this.setState({ newPassword })} />
-                          </InputGroup>
+                              <InputGroup borderType='underline' style={{marginTop: 30}}>
+                                  <Icon name='ios-unlock-outline' style={{color:'#384850', marginTop: -5, marginRight: 15}}/>
+                                  <Input
+                                    placeholder='New Password'
+                                    secureTextEntry
+                                    onChangeText={newPassword => this.setState({ newPassword })} />
+                              </InputGroup>
 
-                          <View style={{ marginTop: 30, flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
-                            <View>
-                              <Button bordered danger onPress={() => this.setState({confirmotp : true})}>
-                                  Go Back
-                              </Button>
-                            </View>
+                              <View style={{ marginTop: 30, flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <View>
+                                  <Button bordered danger onPress={() => this.setState({confirmotp : true})}>
+                                      Go Back
+                                  </Button>
+                                </View>
 
-                            <View>
-                              <Button success style={{alignSelf: 'flex-end'}} onPress={() => this.resetPassword()}>
-                                  Reset password
-                              </Button>
-                            </View>
+                                <View>
+                                  <Button success style={{alignSelf: 'flex-end'}} onPress={() => this.resetPassword()}>
+                                      Reset password
+                                  </Button>
+                                </View>
+                              </View>
                           </View>
                       </View>
                     )

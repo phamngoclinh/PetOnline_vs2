@@ -15,7 +15,7 @@ const {
 
 const background = require('../../../images/background.jpg');
 
-class Signup extends Component {
+class ForgetPassword extends Component {
 
   static propTypes = {
     name: React.PropTypes.string,

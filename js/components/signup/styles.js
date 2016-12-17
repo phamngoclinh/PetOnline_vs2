@@ -1,7 +1,10 @@
 
 const React = require('react-native');
 
-const { StyleSheet } = React;
+const { StyleSheet, Dimensions } = React;
+
+const deviceHeight = Dimensions.get('window').height;
+const deviceWidth = Dimensions.get('window').width;
 
 module.exports = StyleSheet.create({
   container: {
@@ -14,16 +17,18 @@ module.exports = StyleSheet.create({
   },
   top: {
     alignSelf: 'center',
-    marginTop: 100,
-    marginBottom: 50,
+    marginTop: 20,
+    marginBottom: 30,
   },
   logo: {
     borderRadius: 100,
+    width: 80,
+    height: 80
   },
   shadow: {
     flex: 1,
     width: null,
-    // height: deviceHeight,
+    height: deviceHeight + 200,
     // resizeMode: 'contain',
   },
   main: {
@@ -34,8 +39,8 @@ module.exports = StyleSheet.create({
     paddingRight: 10,
     paddingBottom: 30,
     bottom: 0,
-    maxWidth: 500,
-    minWidth: 400,
+    maxWidth: deviceWidth / 2.75,
+    minWidth: 350,
     alignSelf: 'center',
   },
   forget: {

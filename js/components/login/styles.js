@@ -17,8 +17,8 @@ module.exports = StyleSheet.create({
   },
   top: {
     alignSelf: 'center',
-    marginTop: 150,
-    marginBottom: 100,
+    marginTop: 50,
+    marginBottom: 50,
   },
   logo: {
     borderRadius: 100,
@@ -26,7 +26,7 @@ module.exports = StyleSheet.create({
   shadow: {
     flex: 1,
     width: null,
-    // height: deviceHeight,
+    height: deviceHeight + 200,
     // resizeMode: 'contain',
   },
   main: {
@@ -37,12 +37,13 @@ module.exports = StyleSheet.create({
     paddingRight: 10,
     paddingBottom: 30,
     bottom: 0,
-    maxWidth: 500,
-    minWidth: 400,
+    maxWidth: deviceWidth / 2.75,
+    minWidth: 350,
     alignSelf: 'center',
   },
   forget: {
-    alignSelf: 'center'
+    alignSelf: 'center',
+
   },
   actions: {
     marginTop: 50
@@ -65,23 +66,36 @@ module.exports = StyleSheet.create({
 
   modal: {
     flex: 1,
-    // flexDirection: 'column',
+    flexDirection: 'row',
     // alignItems: 'center',
     // paddingTop: 20,
     // backgroundColor: '#FFFFFF'
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,.6)'
+    justifyContent: 'flex-start',
+    backgroundColor: 'rgba(0,0,0,.6)',
+    width: deviceWidth
 
   },
   forgetForm: {
-    // flex: 1,
-    marginTop: deviceHeight / 2.75,
-    alignSelf: 'center',
-    width: 400,
-    padding: 20,
+    flex: 1,
+    flexDirection: 'column',
     alignItems: 'center',
+    justifyContent: 'flex-start',
+    // flex: 1,
+    // marginTop: deviceHeight / 3.55,
+    alignSelf: 'center',
+    width: deviceWidth / 1.25,
+    minWidth: 250,
+    padding: 20,
     backgroundColor: '#FFFFFF'
   },
 
+  wrapperFormForget: {
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    width: deviceWidth / 1.25,
+    minWidth: 250,
+    alignItems: 'center'
+  }
 
 });
