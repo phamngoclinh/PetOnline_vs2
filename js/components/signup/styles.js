@@ -14,8 +14,8 @@ module.exports = StyleSheet.create({
   },
   top: {
     alignSelf: 'center',
-    marginTop: 150,
-    marginBottom: 100,
+    marginTop: 100,
+    marginBottom: 50,
   },
   logo: {
     borderRadius: 100,

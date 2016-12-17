@@ -62,4 +62,26 @@ module.exports = StyleSheet.create({
     shadowOpacity : 0,
     shadowOffset : {width: 0, height: 0},
   },
+
+  modal: {
+    flex: 1,
+    // flexDirection: 'column',
+    // alignItems: 'center',
+    // paddingTop: 20,
+    // backgroundColor: '#FFFFFF'
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,.6)'
+
+  },
+  forgetForm: {
+    // flex: 1,
+    marginTop: deviceHeight / 2.75,
+    alignSelf: 'center',
+    width: 400,
+    padding: 20,
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF'
+  },
+
+
 });

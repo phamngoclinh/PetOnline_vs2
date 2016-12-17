@@ -37,8 +37,10 @@ class Signup extends Component {
     super(props);
     this.state = {
       name: '',
-      username: '',
+      email: '',
       phone: '',
+      firstName: '',
+      lastName: '',
       password: '',
       is_loading: true,
       data : null
@@ -62,7 +64,7 @@ class Signup extends Component {
   signup() {
     let _this = this;
 
-    if(this.state.username == '' || this.state.phone == '' || this.state.password == '') {
+    if(this.state.email == '' || this.state.phone == '' || this.state.password == '' || this.state.firstName == '' || this.state.lastName == '') {
       Alert.alert(
         "Cảnh báo",
         "Vui lòng nhập đầy đủ các ô trên màn hình!",
@@ -82,10 +84,10 @@ class Signup extends Component {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          "email": this.state.username,
+          "email": this.state.email,
           "phone": this.state.phone,
-          "firstName": "Linh",
-          "lastName": "Pham",
+          "firstName": this.state.firstName,
+          "lastName": this.state.lastName,
           "passwordHash": this.state.password
         })
       })
@@ -158,12 +160,22 @@ class Signup extends Component {
               <View style={styles.main}>
                 <InputGroup style={styles.input}>
                   <Icon name="ios-person" style={{marginTop: -10, marginRight: 20, color: "#5b71ff"}}/>
-                  <Input placeholder="EMAIL" onChangeText={username => this.setState({ username })}  style={{color: '#333333'}}/>
+                  <Input placeholder="EMAIL" onChangeText={email => this.setState({ email })}  style={{color: '#333333'}}/>
                 </InputGroup>
                 <InputGroup style={styles.input}>
                     <Icon name="ios-call" style={{marginTop: -10, marginRight: 20, color: "#5b71ff"}} />
                     <Input placeholder="PHONE" keyboardType="numeric"
                       onChangeText={phone => this.setState({ phone })} />
+                </InputGroup>
+                <InputGroup style={styles.input}>
+                    <Icon name="ios-globe-outline" style={{marginTop: -10, marginRight: 20, color: "#5b71ff"}} />
+                    <Input placeholder="FIRST NAME" keyboardType="numeric"
+                      onChangeText={firstName => this.setState({ firstName })} />
+                </InputGroup>
+                <InputGroup style={styles.input}>
+                    <Icon name="ios-globe-outline" style={{marginTop: -10, marginRight: 20, color: "#5b71ff"}} />
+                    <Input placeholder="LAST NAME" keyboardType="numeric"
+                      onChangeText={lastName => this.setState({ lastName })} />
                 </InputGroup>
                 <InputGroup style={styles.input}>
                   <Icon name="ios-unlock-outline" style={{marginTop: -10, marginRight: 20, color: "#5b71ff"}}/>
