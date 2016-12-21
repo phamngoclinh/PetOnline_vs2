@@ -35,7 +35,7 @@ module.exports = StyleSheet.create({
   myInput: {
   	marginTop: 20,
   },
-  createPet: {
+  createArticle: {
   	alignSelf: 'center',
   	marginTop: 35,
   	paddingLeft: 30,

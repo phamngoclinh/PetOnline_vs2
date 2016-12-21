@@ -1,12 +1,15 @@
 
 import React, { Component } from 'react';
-import { Image, Alert, Modal } from 'react-native';
+import { Image, Alert, Modal, AsyncStorage } from 'react-native';
 import { connect } from 'react-redux';
 import { actions } from 'react-native-navigation-redux-helpers';
 import { Container, Content, InputGroup, Input, Button, Icon, View, Text, Spinner, Card, CardItem } from 'native-base';
 
 import { setUser } from '../../actions/user';
+import template from '../../themes/style-template';
 import styles from './styles';
+
+import GLOBAL from '../../storage/global';
 
 const {
   replaceAt,
@@ -38,20 +41,67 @@ class Login extends Component {
       emailForget: '',
       confirmotp: true,
       is_loading: true,
-      otpcode : '',
+      otpCode : '',
       newPassword: '',
       is_submit_forget: false,
       data: null,
-      authToken: ''
+      authToken: '',
+      getOptMessage: '',
+      confirmOtpMessage: '',
+      loginMessage: ''
     };
   }
 
   componentDidMount() {
     let _this = this;
+
+    // _this._removeToken().done();
+
+    _this._loadInitialState().done();
+
+
     _this.setState({
       is_loading: false
     });
+
+    _this._getUserId().done();
   }
+
+  _loadInitialState = async () => {
+    try {
+      var authToken = await AsyncStorage.getItem(GLOBAL.AUTH_TOKEN);
+      if (authToken !== null){
+        // alert(authToken);
+        this.replaceRoute('home');
+        // alert("Check authToken is exist. authToken = " + authToken);
+      } else {
+        try {
+          console.log("Check authToken is NOT exist yet");
+        } catch (error) {
+          //
+        }
+      }
+    } catch (error) {
+      //
+    }
+  };
+
+  _authenticate = async (token) => {
+    // alert(token);
+    try {
+      await AsyncStorage.setItem(GLOBAL.AUTH_TOKEN, token)
+    } catch (error) {
+      //
+    }
+  };
+
+  _removeToken = async () => {
+    try {
+      await AsyncStorage.removeItem(GLOBAL.AUTH_TOKEN);
+    } catch (error) {
+
+    }
+  };
 
   setUser(name) {
     this.props.setUser(name);
@@ -70,13 +120,9 @@ class Login extends Component {
     let _this = this;
 
     if(this.state.username == '' || this.state.password == '') {
-      Alert.alert(
-        "Cảnh báo",
-        "Vui lòng nhập đầy đủ các ô trên màn hình!",
-        [
-          {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'}
-        ]
-      );
+      _this.setState({
+        loginMessage: 'Vui lòng nhập đầy đủ thông tin trước khi đăng nhập'
+      });
     } else {
       _this.setState({
         is_loading: true
@@ -101,15 +147,9 @@ class Login extends Component {
           if(responseJson.errorCode) {
             console.log("Code: "+ responseJson.errorMsg);
             _this.setState({
-              is_loading: false
-            });
-            Alert.alert(
-              "Thông báo",
-              responseJson.errorMsg,
-              [
-                {text: 'Quay lại', onPress: () => console.log('Quay lại pressed'), style: 'cancel'}
-              ]
-            );            
+              is_loading: false,
+              loginMessage: responseJson.errorMsg
+            });          
           } else {
             _this.setState({
               data: responseJson,
@@ -117,13 +157,12 @@ class Login extends Component {
               is_loading: false
             });
 
-            Alert.alert(
-              "Đăng nhập thành công",
-              "Welcome to PetOnline",
-              [
-                {text: 'Go next', onPress: () => this.replaceRoute('home')},
-              ]
-            );
+            _this._saveUserId(responseJson.userAuthInfoId);
+            _this._authenticate(responseJson.authToken).done();
+
+            // alert("Authenticate successfully: " + AsyncStorage.getItem(AUTH_TOKEN));
+
+            _this.replaceRoute('home');
           }
       })
       .catch((error) => {
@@ -134,7 +173,6 @@ class Login extends Component {
             "Lỗi",
             "Lỗi phát sinh trong quá trình đăng ký. Vui lòng thử lại!",
             [
-              {text: 'Tìm hiểu thêm', onPress: () => console.log('Tìm hiểu thêm pressed')},
               {text: 'OK', onPress: () => console.log('OK Pressed')},
             ]
           );
@@ -144,18 +182,63 @@ class Login extends Component {
     }
   }
 
+  _saveUserId(userId) {
+    try {
+      AsyncStorage.setItem(GLOBAL.USER_ID, userId);
+    } catch (error) {
+      console.log("Error: ", error);
+    }
+  }
+
+  _getUserId = async () => {
+    try {
+      var x = await AsyncStorage.getItem(GLOBAL.USER_ID);
+    } catch (error) {
+      console.log("Error: ", error);
+      alert(error);
+    }
+
+    // try {
+    //   const value = await AsyncStorage.getItem('AUTH_TOKEN');
+    //   if (value !== null){
+    //     // We have data!!
+    //     console.log(value);
+    //   }
+    // } catch (error) {
+    //   // Error retrieving data
+    // }
+  }
+
+  _saveUserInfo(userId, userEmail = '', userPhone = '', userFirstName = '', userLastName = '') {
+    alert("userId: " + userId);
+
+    try {
+      AsyncStorage.multiSet([
+        ['USER_ID', userId],
+        ['USER_FIRST_NAME', userFirstName],
+        ['USER_LAST_NAME', userLastName],
+        ['USER_EMAIL', userEmail],
+        ['USER_PHONE', userPhone]
+      ], (error) => {
+        console.log("Error: ", error);
+      });
+    } catch (error) {
+      console.log("Error: ", error);
+    }
+  }
+
   // get Opt code form forget password form (in popup)
   getOptCode() {
     let _this = this;
 
+    _this.setState({
+      otpCode: ''
+    });
+
     if(this.state.emailForget == '') {
-      Alert.alert(
-        "Cảnh báo",
-        "Vui lòng nhập đầy đủ các ô trên màn hình!",
-        [
-          {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'}
-        ]
-      );
+      _this.setState({
+        getOptMessage : 'Vui lòng nhập vào địa chỉ email của bạn'
+      })
     } else {
       _this.setState({
         is_submit_forget: true
@@ -179,26 +262,16 @@ class Login extends Component {
           if(responseJson.errorCode) {
             console.log("Code: "+ responseJson.errorMsg);
             _this.setState({
-              is_submit_forget: false
+              is_submit_forget: false,
+              getOptMessage : responseJson.errorMsg
             });
-            Alert.alert(
-              "Thông báo",
-              responseJson.errorMsg,
-              [
-                {text: 'Thử lại', onPress: () => console.log('Quay lại pressed'), style: 'cancel'}
-              ]
-            );            
           } else {
             _this.setState({
-              // modalVisible: false,
+              getOptMessage: 'Yêu cầu đổi mật khẩu gửi thành công',
               confirmotp: false,
+              otpCode: '',
               is_submit_forget: false
             });
-
-            Alert.alert(
-              "Gửi thành công",
-              "Yêu cầu quên mật khẩu đã được gửi đi"
-            );
           }
       })
       .catch((error) => {
@@ -209,7 +282,6 @@ class Login extends Component {
             "Lỗi",
             "Lỗi phát sinh trong quá trình gửi yêu cầu. Vui lòng thử lại!",
             [
-              {text: 'Tìm hiểu thêm', onPress: () => console.log('Tìm hiểu thêm pressed')},
               {text: 'OK', onPress: () => console.log('OK Pressed')},
             ]
           );
@@ -223,14 +295,10 @@ class Login extends Component {
   resetPassword() {
       let _this = this;
 
-      if(this.state.otpcode == '' || this.state.newPassword == '') {
-        Alert.alert(
-          "Cảnh báo",
-          "Vui lòng nhập đầy đủ các ô trên màn hình!",
-          [
-            {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'}
-          ]
-        );
+      if(this.state.otpCode == '' || this.state.newPassword == '') {
+        _this.setState({
+          confirmOtpMessage: 'Vui lòng điền đầy đủ thông tin'
+        });
       } else {
         _this.setState({
           is_submit_forget: true
@@ -244,7 +312,7 @@ class Login extends Component {
           },
           body: JSON.stringify({
             "email": this.state.emailForget,
-            "oTPCode": this.state.otpcode,
+            "oTPCode": this.state.otpCode,
             "passwordHash": this.state.newPassword
           })
         })
@@ -256,26 +324,16 @@ class Login extends Component {
             if(responseJson.errorCode) {
               console.log("Code: "+ responseJson.errorMsg);
               _this.setState({
-                is_submit_forget: false
-              });
-              Alert.alert(
-                "Thông báo",
-                responseJson.errorMsg,
-                [
-                  {text: 'Thử lại', onPress: () => console.log('Quay lại pressed'), style: 'cancel'}
-                ]
-              );            
+                is_submit_forget: false,
+                confirmOtpMessage: responseJson.errorMsg
+              });          
             } else {
               _this.setState({
                 modalVisible: false,
                 confirmotp: true,
-                is_submit_forget: false
+                is_submit_forget: false,
+                confirmOtpMessage: 'Cập nhật mật khẩu thành công'
               });
-
-              Alert.alert(
-                "Reset thành công",
-                "Mật khẩu của bạn đã được cập nhật"
-              );
             }
         })
         .catch((error) => {
@@ -286,7 +344,6 @@ class Login extends Component {
               "Lỗi",
               "Lỗi phát sinh trong quá trình gửi yêu cầu. Vui lòng thử lại!",
               [
-                {text: 'Tìm hiểu thêm', onPress: () => console.log('Tìm hiểu thêm pressed')},
                 {text: 'OK', onPress: () => console.log('OK Pressed')},
               ]
             );
@@ -308,19 +365,21 @@ class Login extends Component {
               <View style={styles.main}>
                 <InputGroup style={styles.input}>
                   <Icon name="ios-person" style={{marginTop: -10, marginRight: 20, color: "#5b71ff"}}/>
-                  <Input placeholder="EMAIL or PHONE" onChangeText={username => this.setState({ username })}  style={{color: '#333333'}}/>
+                  <Input placeholder="Email / Số điện thoại" onChangeText={username => this.setState({ username })}  style={{color: '#333333'}}/>
                 </InputGroup>
                 <InputGroup style={styles.input}>
                   <Icon name="ios-unlock-outline" style={{marginTop: -10, marginRight: 20, color: "#5b71ff"}}/>
                   <Input
-                    placeholder="PASSWORD"
+                    placeholder="Mật khẩu"
                     secureTextEntry
                     onChangeText={password => this.setState({ password })}
                   />
                 </InputGroup>
 
+                {this.state.loginMessage ? <Text style={{ color: template.danger, alignSelf: 'center' }}>{this.state.loginMessage}</Text> : null}
+
                 <Button style={styles.btn} bordered onPress={() => this.signin()}>
-                  <Text style={{color:'#FFFFFF'}}>Login</Text>
+                  <Text style={{color:'#FFFFFF'}}>ĐĂNG NHẬP</Text>
                 </Button>
 
                 <View style={styles.actions}>
@@ -347,16 +406,16 @@ class Login extends Component {
                     this.state.confirmotp ? (
                       <View style={styles.forgetForm}>
                           <View style={styles.wrapperFormForget}>
-                              <Text>
-                                Forget password
+                              <Text style={{marginBottom: 15}}>
+                                QUÊN MẬT KHẨU
                               </Text>
 
                               {this.state.is_submit_forget ? <Spinner color='blue' visible={this.state.is_submit_forget} /> : null}
-
+                              {this.state.getOptMessage ? <Text style={{ color: template.warning }}>{this.state.getOptMessage}</Text> : null}
                               <InputGroup borderType='underline' style={{marginTop: 30}}>
                                   <Icon name='ios-mail' style={{color:'#384850', marginTop: -5, marginRight: 15}}/>
                                   <Input
-                                    placeholder='Enter your email or phone...'
+                                    placeholder='Nhập email hoặc số điện thoại'
                                     onChangeText={emailForget => this.setState({ emailForget })} />
                               </InputGroup>
 
@@ -365,13 +424,13 @@ class Login extends Component {
                                   <Button bordered danger onPress={() => {
                                     this.setModalVisible(!this.state.modalVisible, this.state.selectedItem)
                                      }}>
-                                      Go Back
+                                      Thoát
                                   </Button>
                                 </View>
 
                                 <View>
                                   <Button success style={{alignSelf: 'flex-end'}} onPress={() => this.getOptCode()}>
-                                      Submit
+                                      Gửi yêu cầu
                                   </Button>
                                 </View>
                               </View>
@@ -380,23 +439,23 @@ class Login extends Component {
                     ) : (
                       <View style={styles.forgetForm}>
                           <View style={styles.wrapperFormForget}>
-                              <Text>
-                                  Enter your password
+                              <Text style={{marginBottom: 15}}>
+                                  CẬP NHẬT MẬT KHẨU
                               </Text>
 
                               {this.state.is_submit_forget ? <Spinner color='blue' visible={this.state.is_submit_forget} /> : null}
-
+                              {this.state.confirmOtpMessage ? <Text style={{ color: template.warning }}>{this.state.confirmOtpMessage}</Text> : null}
                               <InputGroup borderType='underline' style={{marginTop: 30}}>
                                   <Icon name='ios-key-outline' style={{color:'#384850', marginTop: -5, marginRight: 15}}/>
                                   <Input
-                                    placeholder='OTP Code'
-                                    onChangeText={otpcode => this.setState({ otpcode })} />
+                                    placeholder='Nhập mã OTP'
+                                    onChangeText={otpCode => this.setState({ otpCode })} />
                               </InputGroup>
 
                               <InputGroup borderType='underline' style={{marginTop: 30}}>
                                   <Icon name='ios-unlock-outline' style={{color:'#384850', marginTop: -5, marginRight: 15}}/>
                                   <Input
-                                    placeholder='New Password'
+                                    placeholder='Nhập mật khẩu mới'
                                     secureTextEntry
                                     onChangeText={newPassword => this.setState({ newPassword })} />
                               </InputGroup>
@@ -404,13 +463,13 @@ class Login extends Component {
                               <View style={{ marginTop: 30, flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
                                 <View>
                                   <Button bordered danger onPress={() => this.setState({confirmotp : true})}>
-                                      Go Back
+                                      Quay lại
                                   </Button>
                                 </View>
 
                                 <View>
                                   <Button success style={{alignSelf: 'flex-end'}} onPress={() => this.resetPassword()}>
-                                      Reset password
+                                      Cập nhật
                                   </Button>
                                 </View>
                               </View>

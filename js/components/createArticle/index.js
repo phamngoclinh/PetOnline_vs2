@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import { MapView, Image, TextInput, UselessTextInput, Alert } from 'react-native';
+import { MapView, Image, TextInput, UselessTextInput, Alert, AsyncStorage } from 'react-native';
 import { connect } from 'react-redux';
 import { actions } from 'react-native-navigation-redux-helpers';
 import { Container, Header, Title, Content, Text, Button, Icon, Fab, View, Thumbnail, InputGroup, Input, Spinner } from 'native-base';
@@ -17,6 +17,10 @@ const {
 var Platform = require('react-native').Platform;
 var ImagePicker = require('react-native-image-picker');
 
+// LocalStorage
+var AUTH_TOKEN = '';
+var authToken = '';
+var FROM_PET_ID = '';
 
 
 // More info on all the options is below in the README...just some common use cases shown here
@@ -58,12 +62,16 @@ class CreateArticle extends Component {
           articleDescription: '',
           articleContent: '',
           articleBasePrice: 100000,
-          is_loading: false
+          is_loading: false,
+          authenticateToken: '',
+          createArticleMessage: ''
       };
   }
 
   componentDidMount() {
-    
+    let _this = this;
+
+    _this._loadInitialState().done();
   }
 
   popRoute() {
@@ -121,19 +129,15 @@ class CreateArticle extends Component {
     let _this = this;
 
     if(
-      this.state.avatarSourceBase64 == '' ||
-      this.state.avatarSourceBase64 == null ||  
-      this.state.petName == '' || 
-      this.state.petDate == '' || 
+      // this.state.avatarSourceBase64 == '' ||
+      // this.state.avatarSourceBase64 == null ||  
+      // this.state.petName == '' || 
+      // this.state.petDate == '' || 
       this.state.petPrice == ''
     ) {
-      Alert.alert(
-        "Cảnh báo",
-        "Vui lòng nhập đầy đủ các ô trên màn hình!",
-        [
-          {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'}
-        ]
-      );
+      _this.setState({
+        createArticleMessage: 'Vui lòng nhập đầy đủ thông tin'
+      });
     } else {
       _this.setState({
         is_loading: true
@@ -143,7 +147,8 @@ class CreateArticle extends Component {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Auth-Token': authToken
         },
         body: JSON.stringify({
           "title": this.state.articleTitle,
@@ -151,7 +156,6 @@ class CreateArticle extends Component {
           "content": this.state.articleContent,
           "price": this.state.articleBasePrice,
           "petId": 2
-
         })
       })
       .then((response) => response.json())
@@ -174,7 +178,6 @@ class CreateArticle extends Component {
           } else {
             _this.setState({
               data: responseJson,
-              authToken : responseJson.authToken,
               is_loading: false
             });
 
@@ -205,6 +208,27 @@ class CreateArticle extends Component {
     }
   }
 
+  _loadInitialState = async () => {
+    try {
+      authToken = await AsyncStorage.getItem(AUTH_TOKEN);
+      // alert(authToken);
+      if (authToken !== null){
+        // this.replaceRoute('home');
+        this.setState({
+          authenticateToken : authToken
+        });
+      } else {
+        try {
+          //
+        } catch (error) {
+          //
+        }
+      }
+    } catch (error) {
+      //
+    }
+  };
+
   render() {
     const { props: { name, index, list } } = this;
 
@@ -215,7 +239,7 @@ class CreateArticle extends Component {
             <Icon name="ios-arrow-back" />
           </Button>
 
-          <Title>{(name) ? this.props.name : 'Create Pet'}</Title>
+          <Title>{(name) ? this.props.name : 'Create Article'}</Title>
 
           <Button transparent onPress={this.props.openDrawer}>
             <Icon name="ios-menu" />

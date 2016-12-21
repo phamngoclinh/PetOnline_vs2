@@ -1,27 +1,70 @@
 
 import React, { Component } from 'react';
-import { Image, ScrollView } from 'react-native';
+import { Image, ScrollView, AsyncStorage } from 'react-native';
 import { connect } from 'react-redux';
+import { actions } from 'react-native-navigation-redux-helpers';
 import { Content, Text, List, ListItem, Card, CardItem, Thumbnail, Button, Icon, Badge } from 'native-base';
 
 import { setIndex } from '../../actions/list';
 import navigateTo from '../../actions/sideBarNav';
 import myTheme from '../../themes/base-theme';
 
+import { closeDrawer } from '../../actions/drawer';
+
+import GLOBAL from '../../storage/global';
+
 import styles from './style';
+
+const {
+  replaceAt,
+} = actions;
+
 
 class SideBar extends Component {
 
   static propTypes = {
     // setIndex: React.PropTypes.func,
+    drawerState: React.PropTypes.string,
     navigateTo: React.PropTypes.func,
+    replaceAt: React.PropTypes.func,
+    closeDrawer: React.PropTypes.func,
+  }
+
+  constructor(props) {
+    super(props);
+    this.state = {
+
+    };
   }
 
   navigateTo(route) {
     this.props.navigateTo(route, 'home');
   }
 
+  replaceRoute(route) {
+    this.props.replaceAt('home', { key: route }, this.props.navigation.key);
+  }
 
+  logout() {
+    let _this = this;
+    _this._removeToken().done();
+    _this.closeDrawer();
+    _this.replaceRoute('signin');
+  }
+
+  _removeToken = async () => {
+    try {
+      await AsyncStorage.removeItem(GLOBAL.AUTH_TOKEN);
+    } catch (error) {
+
+    }
+  };
+
+  closeDrawer() {
+    if (this.props.drawerState === 'opened') {
+      this.props.closeDrawer();
+    }
+  }
 
   render() {
     return (
@@ -57,7 +100,7 @@ class SideBar extends Component {
                     <Icon name="ios-log-in" style={{ color: '#0A69FE' }} />
                     <Text>Sign Up</Text>
                 </ListItem>
-                <ListItem button iconLeft >
+                <ListItem button iconLeft onPress={() => this.logout()}>
                     <Icon name="ios-log-out" style={{ color: '#0A69FE' }} />
                     <Text>Sign Out</Text>
                 </ListItem>
@@ -106,11 +149,14 @@ class SideBar extends Component {
 function bindAction(dispatch) {
   return {
     setIndex: index => dispatch(setIndex(index)),
+    closeDrawer: () => dispatch(closeDrawer()),
     navigateTo: (route, homeRoute) => dispatch(navigateTo(route, homeRoute)),
+    replaceAt: (routeKey, route, key) => dispatch(replaceAt(routeKey, route, key)),
   };
 }
 
 const mapStateToProps = state => ({
+  drawerState: state.drawer.drawerState,
   navigation: state.cardNavigation,
 });
 

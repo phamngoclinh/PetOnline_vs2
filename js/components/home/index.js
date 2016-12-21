@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import { TouchableOpacity, Image, Modal } from 'react-native';
+import { TouchableOpacity, Image, Modal, AsyncStorage } from 'react-native';
 import { connect } from 'react-redux';
 import { actions } from 'react-native-navigation-redux-helpers';
 import { Container, Header, Title, Content, H1, H2, H3, H4, Card, CardItem, Text, Button, Icon, InputGroup, Input, Thumbnail, List, ListItem, Spinner, Footer, FooterTab, Badge } from 'native-base';
@@ -12,11 +12,16 @@ import { setIndex } from '../../actions/list';
 import myTheme from '../../themes/base-theme';
 import styles from './styles';
 
+import GLOBAL from '../../storage/global';
+
 const {
   reset,
   pushRoute,
   replaceAt,
 } = actions;
+
+var authToken = '';
+var artId = '';
 
 const apiLink = 'http://210.211.118.178/PetsAPI/';
 const petAlbum = 'http://210.211.118.178/PetsAPI/Images/PetThumbnails/';
@@ -53,7 +58,8 @@ class Home extends Component {
         is_loading_data: false,
         is_search: false,
         skip: 0,
-        limit: 10
+        limit: 10,
+        authenticateToken : ''
       };
 
       this.search = this.search.bind(this);
@@ -61,28 +67,68 @@ class Home extends Component {
 
   componentDidMount() {
       let _this = this;
-      _this.setState({
-        is_loading_data: true
+
+      // _this.getID();
+
+      _this._loadInitialState().done(function(){
+        _this.setState({
+          is_loading_data: true
+        });
+
+        fetch('http://210.211.118.178/PetsAPI/api/articles/'+_this.state.categoryType+'/'+_this.state.skip+'/'+_this.state.limit, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Auth-Token': authToken
+          }
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+            // Store the results in the state variable results and set loading to
+            _this.setState({
+              data: responseJson,
+              is_loading_data: false
+            });
+        })
+        .catch((error) => {
+            _this.setState({
+              loading: false
+          });
+            console.error(error);
+        });
       });
 
-      fetch('http://210.211.118.178/PetsAPI/api/articles/'+_this.state.categoryType+'/'+_this.state.skip+'/'+_this.state.limit, {
-        method: 'GET'
-      })
-      .then((response) => response.json())
-      .then((responseJson) => {
-          // Store the results in the state variable results and set loading to
-          _this.setState({
-            data: responseJson,
-            is_loading_data: false
-          });
-      })
-      .catch((error) => {
-          _this.setState({
-            loading: false
-        });
-          console.error(error);
-      });
+      
   }
+
+  // componentWillMount() {
+  //   alert(authToken);
+  // }
+
+  _loadInitialState = async () => {
+    var x = AsyncStorage.getItem(GLOBAL.AUTH_TOKEN);
+    console.log("================",x);
+    // alert("x = " + x);
+    try {
+      authToken = await AsyncStorage.getItem(GLOBAL.AUTH_TOKEN);
+      // alert(authToken);
+      if (authToken !== null){
+        // this.replaceRoute('home');
+        this.setState({
+          authenticateToken : authToken
+        });
+      } else {
+        try {
+          //
+        } catch (error) {
+          //
+        }
+      }
+    } catch (error) {
+      //
+    }
+  };
 
   pushRoute(route, index) {
     this.props.setIndex(index);
@@ -110,6 +156,31 @@ class Home extends Component {
 
   setModalVisible(visible) {
     this.setState({modalVisible: visible});
+  }
+
+  viewDetail(id) {
+    let _this = this;
+    _this._saveDetailId(id).done(function() {
+      console.log("ART ID: " + artId);
+      _this.pushRoute('detail', 2); 
+    });
+  }
+
+  _saveDetailId = async (id) => {
+    try {
+      await AsyncStorage.setItem(GLOBAL.VIEW_ARTICLE_ID, id);
+    } catch (error) {
+      //
+    }
+  };
+
+  getID = async () => {
+    try {
+      artId = await AsyncStorage.getItem(GLOBAL.VIEW_ARTICLE_ID);
+      console.log("ID: " + artId);
+    } catch (error) {
+      //
+    }
   }
 
 
@@ -152,11 +223,11 @@ class Home extends Component {
                   <Card key={members.id} style={{ flex: 0, marginBottom: 10, borderWidth: .5, borderColor: '#FFFAFA'}}>
                       <CardItem style={{backgroundColor: '#FFFFFA', borderBottomWidth: 0}}>
                           <Thumbnail source={{uri : userAlbum + members.Pet.User.avatarThumbnail}} />
-                          <Text onPress={() => this.pushRoute('detail', 2)}>{members.title}</Text>
+                          <Text onPress={() => this.viewDetail(members.id)}>{members.title}</Text>
                           <Text note>{members.Pet.User.firstName} {members.Pet.User.lastName}</Text>
                       </CardItem>
 
-                      <CardItem onPress={() => this.pushRoute('detail', 2)}>
+                      <CardItem onPress={() => this.viewDetail(members.id)}>
                           {
                             /*<Image style={{ resizeMode: 'cover', width: null}} source={{uri: members.Pet.Image.thumbnail}} />*/
                           }
@@ -227,31 +298,6 @@ class Home extends Component {
           </Modal>
 
         </Content>
-
-        {
-          /*
-          <Footer >
-              <FooterTab>
-                  <Button active onPress={() => this.replaceRoute('home')}>
-                      Home
-                      <Icon name='ios-home-outline' />
-                  </Button>
-                  <Button onPress={() => this.replaceRoute('category')}>
-                      Category
-                      <Icon name='ios-camera-outline' />
-                  </Button>
-                  <Button onPress={() => this.replaceRoute('profile')}>
-                      Profile
-                      <Icon name='ios-compass' />
-                  </Button>
-                  <Button onPress={() => this.replaceRoute('logout')}>
-                      Logout
-                      <Icon name='ios-contact-outline' />
-                  </Button>
-              </FooterTab>
-          </Footer>
-          */
-        }
       </Container>
     );
   }

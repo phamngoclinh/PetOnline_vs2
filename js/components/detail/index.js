@@ -1,12 +1,14 @@
 
 import React, { Component } from 'react';
-import { Image } from 'react-native';
+import { Image, AsyncStorage } from 'react-native';
 import { connect } from 'react-redux';
 import { actions } from 'react-native-navigation-redux-helpers';
 import { Container, Header, Title, Content, Text, Button, Icon, Card, CardItem, Thumbnail, Fab } from 'native-base';
 
 import { openDrawer } from '../../actions/drawer';
 import styles from './styles';
+
+import GLOBAL from '../../storage/global';
 
 const {
   popRoute,
@@ -32,13 +34,45 @@ class Detail extends Component {
   constructor(props) {
       super(props)
       this.state = {
-          active: 'true'
+          active: 'true',
+          detailId: ''
       };
   }
 
   componentDidMount() {
+    let _this = this;
+    _this._getArticleId().done(function() {
+      // alert(_this.state.detailId);
+    });
 
     console.log(this.props);
+  }
+
+  componentWillMount() {
+    let _this = this;
+    _this._getArticleId().done(function() {
+      // alert(_this.state.detailId);
+    });
+  }
+
+  _getArticleId = async () => {
+    try {
+      var artId = await AsyncStorage.getItem(GLOBAL.USER_ID);
+      if (artId !== null){
+        // alert("Check id = " + artId);
+        this.setState({
+          detailId: artId
+        });
+      } else {
+        try {
+          alert("Không tìm thấy bài viết. Vui lòng thử lại");
+        } catch (error) {
+          //
+        }
+      }
+    } catch (error) {
+      //
+    }
   }
 
   render() {
@@ -59,7 +93,7 @@ class Detail extends Component {
         </Header>
 
         <Content padder>
-          <Text>Data: {this.props.data}</Text>
+          <Text>Data: {this.state.detailId}</Text>
           <Card style={{ flex: 0, marginTop: 10 }}>
               <CardItem>
                   <Thumbnail source={require('../../../images/avatar.png')} />

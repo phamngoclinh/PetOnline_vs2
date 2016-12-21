@@ -1,12 +1,15 @@
 
 import React, { Component } from 'react';
-import { Image, Alert } from 'react-native';
+import { Image, Alert, AsyncStorage } from 'react-native';
 import { connect } from 'react-redux';
 import { actions } from 'react-native-navigation-redux-helpers';
 import { Container, Content, Text, Button, View, Icon, InputGroup, Input, List, ListItem, CheckBox, Spinner } from 'native-base';
 
 import { openDrawer } from '../../actions/drawer';
+import template from '../../themes/style-template';
 import styles from './styles';
+
+import GLOBAL from '../../storage/global';
 
 const {
   popRoute,
@@ -43,7 +46,8 @@ class Signup extends Component {
       lastName: '',
       password: '',
       is_loading: true,
-      data : null
+      data : null,
+      registerMessage: ''
     };
   }
 
@@ -59,19 +63,29 @@ class Signup extends Component {
     this.props.replaceAt('signup', { key: route }, this.props.navigation.key);
   }
 
-
+  _saveUserInfo(user) {
+    try {
+      AsyncStorage.multiSet([
+        [GLOBAL.USER_FULL_NAME, user.userEntity.firstName + user.userEntity.lastName],
+        [GLOBAL.USER_FIRST_NAME, user.userEntity.firstName],
+        [GLOBAL.USER_LAST_NAME, user.userEntity.lastName],
+        [GLOBAL.USER_EMAIL, user.userEntity.email],
+        [GLOBAL.USER_LOCATION, user.userEntity.nationality]
+      ], (error) => {
+        console.log("Error: ", error);
+      });
+    } catch (error) {
+      console.log("Error: ", error);
+    }
+  }
 
   signup() {
     let _this = this;
 
     if(this.state.email == '' || this.state.phone == '' || this.state.password == '' || this.state.firstName == '' || this.state.lastName == '') {
-      Alert.alert(
-        "Cảnh báo",
-        "Vui lòng nhập đầy đủ các ô trên màn hình!",
-        [
-          {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'}
-        ]
-      );
+      _this.setState({
+        registerMessage: 'Vui lòng nhập đầy đủ thông tin đăng ký'
+      })
     } else {
       _this.setState({
         is_loading: true
@@ -99,27 +113,22 @@ class Signup extends Component {
           if(responseJson.errorCode) {
             console.log("Code: "+ responseJson.errorMsg);
             _this.setState({
-              is_loading: false
+              is_loading: false,
+              registerMessage: responseJson.errorMsg
             });
-            Alert.alert(
-              "Lỗi",
-              responseJson.errorMsg,
-              [
-                {text: 'Quay lại', onPress: () => console.log('Quay lại pressed'), style: 'cancel'}
-              ]
-            );
           } else {
             _this.setState({
               data: responseJson,
               is_loading: false
             });
 
+            _this._saveUserInfo(responseJson);
+
             Alert.alert(
               "Đăng ký thành công",
               "Tôi hoàn toàn đồng ý với mọi quy định của ứng dụng",
               [
-                {text: 'Tìm hiểu thêm', onPress: () => console.log('Ask me later pressed')},
-                {text: 'OK', onPress: () => this.replaceRoute('login')},
+                {text: 'Đồng ý', onPress: () => this.replaceRoute('login')},
               ]
             );
           }
@@ -132,7 +141,6 @@ class Signup extends Component {
             "Lỗi",
             "Lỗi phát sinh trong quá trình đăng ký. Vui lòng thử lại!",
             [
-              {text: 'Tìm hiểu thêm', onPress: () => console.log('Tìm hiểu thêm pressed')},
               {text: 'OK', onPress: () => console.log('OK Pressed')},
             ]
           );
@@ -160,31 +168,33 @@ class Signup extends Component {
               <View style={styles.main}>
                 <InputGroup style={styles.input}>
                   <Icon name="ios-person" style={{marginTop: -10, marginRight: 20, color: "#5b71ff"}}/>
-                  <Input placeholder="EMAIL" onChangeText={email => this.setState({ email })}  style={{color: '#333333'}}/>
+                  <Input placeholder="Email" onChangeText={email => this.setState({ email })}  style={{color: '#333333'}}/>
                 </InputGroup>
                 <InputGroup style={styles.input}>
                     <Icon name="ios-call" style={{marginTop: -10, marginRight: 20, color: "#5b71ff"}} />
-                    <Input placeholder="PHONE" keyboardType="numeric"
+                    <Input placeholder="Số điện thoại" keyboardType="numeric"
                       onChangeText={phone => this.setState({ phone })} />
                 </InputGroup>
                 <InputGroup style={styles.input}>
                     <Icon name="ios-globe-outline" style={{marginTop: -10, marginRight: 20, color: "#5b71ff"}} />
-                    <Input placeholder="FIRST NAME" keyboardType="numeric"
+                    <Input placeholder="Tên" keyboardType="numeric"
                       onChangeText={firstName => this.setState({ firstName })} />
                 </InputGroup>
                 <InputGroup style={styles.input}>
                     <Icon name="ios-globe-outline" style={{marginTop: -10, marginRight: 20, color: "#5b71ff"}} />
-                    <Input placeholder="LAST NAME" keyboardType="numeric"
+                    <Input placeholder="Họ" keyboardType="numeric"
                       onChangeText={lastName => this.setState({ lastName })} />
                 </InputGroup>
                 <InputGroup style={styles.input}>
                   <Icon name="ios-unlock-outline" style={{marginTop: -10, marginRight: 20, color: "#5b71ff"}}/>
                   <Input
-                    placeholder="PASSWORD"
+                    placeholder="Mật khẩu"
                     secureTextEntry
                     onChangeText={password => this.setState({ password })}
                   />
                 </InputGroup>
+
+                {this.state.registerMessage ? <Text style={{ color: template.danger, alignSelf: 'center' }}>{this.state.registerMessage}</Text> : null}
 
                 <Button rounded style={{width: 250, height: 50, alignSelf: 'center', marginBottom: 20, marginTop: 30}} onPress={() => this.signup()}>
                   <Text style={{color:'#FFFFFF'}}>Register</Text>
