@@ -68,8 +68,8 @@ class Home extends Component {
   componentDidMount() {
       let _this = this;
 
-      // _this.getID();
-
+      var x = _this._getStorageValue();
+      
       _this._loadInitialState().done(function(){
         _this.setState({
           is_loading_data: true
@@ -107,11 +107,11 @@ class Home extends Component {
   // }
 
   _loadInitialState = async () => {
-    var x = AsyncStorage.getItem(GLOBAL.AUTH_TOKEN);
-    console.log("================",x);
+    // var x = AsyncStorage.getItem(GLOBAL.AUTH_TOKEN);
+    // console.log("================",x);
     // alert("x = " + x);
     try {
-      authToken = await AsyncStorage.getItem(GLOBAL.AUTH_TOKEN);
+      authToken = await AsyncStorage.getItem('AUTH_TOKEN');
       // alert(authToken);
       if (authToken !== null){
         // this.replaceRoute('home');
@@ -160,27 +160,35 @@ class Home extends Component {
 
   viewDetail(id) {
     let _this = this;
-    _this._saveDetailId(id).done(function() {
-      console.log("ART ID: " + artId);
-      _this.pushRoute('detail', 2); 
+    _this._saveDetailId(id);
+    AsyncStorage.getItem('VIEW_ARTICLE_ID').then( (value) => {
+      this.pushRoute('detail', 2);
     });
   }
 
-  _saveDetailId = async (id) => {
+  _saveDetailId(id) {
     try {
-      await AsyncStorage.setItem(GLOBAL.VIEW_ARTICLE_ID, id);
+      AsyncStorage.setItem('VIEW_ARTICLE_ID', id.toString());
     } catch (error) {
-      //
+      console.log(error);
     }
   };
 
   getID = async () => {
     try {
-      artId = await AsyncStorage.getItem(GLOBAL.VIEW_ARTICLE_ID);
-      console.log("ID: " + artId);
+      artId = await AsyncStorage.getItem('VIEW_ARTICLE_ID');
     } catch (error) {
       //
+      alert("Eror get" + "Eror save" + error);
     }
+  }
+
+  _getStorageValue(){
+    AsyncStorage.getItem('VIEW_ARTICLE_ID').then((value) => {
+      return value;
+    }, (error) => {
+      console.log(error);
+    })
   }
 
 
@@ -216,6 +224,7 @@ class Home extends Component {
         </Header>
 
         <Content padder>
+          {this.state.is_loading_data ? <Spinner color='blue' visible={this.state.is_loading_data} /> : null}
           {
             this.state.data ?
               this.state.data.map((members, index) => {

@@ -69,7 +69,7 @@ class Login extends Component {
 
   _loadInitialState = async () => {
     try {
-      var authToken = await AsyncStorage.getItem(GLOBAL.AUTH_TOKEN);
+      var authToken = await AsyncStorage.getItem('AUTH_TOKEN');
       if (authToken !== null){
         // alert(authToken);
         this.replaceRoute('home');
@@ -89,7 +89,7 @@ class Login extends Component {
   _authenticate = async (token) => {
     // alert(token);
     try {
-      await AsyncStorage.setItem(GLOBAL.AUTH_TOKEN, token)
+      await AsyncStorage.setItem('AUTH_TOKEN', token)
     } catch (error) {
       //
     }
@@ -97,7 +97,7 @@ class Login extends Component {
 
   _removeToken = async () => {
     try {
-      await AsyncStorage.removeItem(GLOBAL.AUTH_TOKEN);
+      await AsyncStorage.removeItem('AUTH_TOKEN');
     } catch (error) {
 
     }
@@ -184,7 +184,7 @@ class Login extends Component {
 
   _saveUserId(userId) {
     try {
-      AsyncStorage.setItem(GLOBAL.USER_ID, userId);
+      AsyncStorage.setItem('USER_ID', userId);
     } catch (error) {
       console.log("Error: ", error);
     }
@@ -192,7 +192,7 @@ class Login extends Component {
 
   _getUserId = async () => {
     try {
-      var x = await AsyncStorage.getItem(GLOBAL.USER_ID);
+      var x = await AsyncStorage.getItem('USER_ID');
     } catch (error) {
       console.log("Error: ", error);
       alert(error);
