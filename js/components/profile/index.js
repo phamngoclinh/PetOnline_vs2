@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { View, Image, ScrollView, Dimensions } from 'react-native';
 import { connect } from 'react-redux';
 import { actions } from 'react-native-navigation-redux-helpers';
-import { Container, Header, Title, Content, Text, Button, Radio, Tabs, Icon, Thumbnail, List, ListItem, InputGroup, Input, Card, CardItem, Grid, Col } from 'native-base';
+import { Container, Header, Title, Content, H1, H3, Text, Button, Radio, Tabs, Icon, Thumbnail, List, ListItem, InputGroup, Input, Card, CardItem, Grid, Col } from 'native-base';
 
 import { openDrawer } from '../../actions/drawer';
 import styles from './styles';
@@ -12,8 +12,24 @@ const {
   popRoute,
 } = actions;
 
+var Platform = require('react-native').Platform;
+var ImagePicker = require('react-native-image-picker');
+
 const ScreenHeight = Dimensions.get("window").height;
 const ScreenWidth = Dimensions.get("window").width;
+
+// More info on all the options is below in the README...just some common use cases shown here
+var options = {
+  title: 'Select Avatar',
+  customButtons: [
+    {name: 'fb', title: 'Choose Photo from Facebook'},
+  ],
+  storageOptions: {
+    skipBackup: true,
+    path: 'images'
+  }
+};
+
 
 class Profile extends Component {
 
@@ -30,6 +46,101 @@ class Profile extends Component {
 
   popRoute() {
     this.props.popRoute(this.props.navigation.key);
+  }
+
+  constructor(props) {
+      super(props);
+      this.state = {
+          active: 'true',
+          avatarSource: null,
+          avatarSourceBase64: '',
+          coverSource: null,
+          coverSourceBase64: '',
+      };
+  }
+
+  loadImageFromDevice() {
+    /**
+   * The first arg is the options object for customization (it can also be null or omitted for default options),
+   * The second arg is the callback which sends object: response (more info below in README)
+   */
+    ImagePicker.showImagePicker(options, (response) => {
+      console.log('Response = ', response);
+
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      }
+      else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      }
+      else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+      }
+      else {
+
+        // You can display the image using either data...
+        const source = {uri: 'data:image/jpeg;base64,' + response.data, isStatic: true};
+        this.setState({
+          avatarSourceBase64: response.data
+        });
+        // const source = {uri: response.data, isStatic: true};
+
+        // or a reference to the platform specific asset location
+        if (Platform.OS === 'ios') {
+          const source = {uri: response.uri.replace('file://', ''), isStatic: true};
+        } else {
+          const source = {uri: response.uri, isStatic: true};
+        }
+
+        this.setState({
+          avatarSource: source
+        });
+
+        console.log("Source: ", source);
+      }
+    });
+  }
+
+  loadImageFromDeviceForCover() {
+    /**
+   * The first arg is the options object for customization (it can also be null or omitted for default options),
+   * The second arg is the callback which sends object: response (more info below in README)
+   */
+    ImagePicker.showImagePicker(options, (response) => {
+      console.log('Response = ', response);
+
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      }
+      else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      }
+      else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+      }
+      else {
+
+        // You can display the image using either data...
+        const source = {uri: 'data:image/jpeg;base64,' + response.data, isStatic: true};
+        this.setState({
+          coverSourceBase64: response.data
+        });
+        // const source = {uri: response.data, isStatic: true};
+
+        // or a reference to the platform specific asset location
+        if (Platform.OS === 'ios') {
+          const source = {uri: response.uri.replace('file://', ''), isStatic: true};
+        } else {
+          const source = {uri: response.uri, isStatic: true};
+        }
+
+        this.setState({
+          coverSource: source
+        });
+
+        console.log("Source: ", source);
+      }
+    });
   }
 
   render() {
@@ -52,10 +163,60 @@ class Profile extends Component {
         <Content style={{flex: 0, flexDirection: 'row', height: ScreenHeight - 80}}>
           
           <View style={styles.top}>
-            <Image resizeMode={Image.resizeMode.contain} source={require('../../../images/avatar.png')}>
-              <Text style={{color: '#ffffff'}}>Phạm Ngọc Linh</Text>
-              <Text note style={{color: '#ffffff'}}>Email: pnlinh93@gmail.com</Text>
-            </Image>
+            {
+            	this.state.coverSource ? (
+            		<Image 
+            			style={{width: ScreenWidth, minHeight: 150}}
+              			source={this.state.coverSource}>
+
+              			<ListItem style={{borderBottomWidth: 0, padding: 30}}>
+			                {
+			                	this.state.avatarSource ? (
+			                		<Thumbnail source={this.state.avatarSource} style={{width: 100, height: 100, borderRadius: 100, marginLeft: 10}}/>
+			                	) : (
+			                		<Thumbnail source={require('../../../images/avatar.png')} style={{width: 100, height: 100, borderRadius: 100, marginLeft: 10}}/>
+			                	)
+			                }
+			                <Text style={{height: 40}}><H1>PHẠM NGỌC LINH</H1></Text>
+			                <Text note numberOfLines={5} style={{height: 40}}><H3 style={{color: '#05a5d1'}}>Email: pnlinh93@gmail.com</H3></Text>
+			                <Button transparent style={{
+			                	position: 'absolute',
+			                	right: 0,
+			                	top: 20,
+			                	height: 40
+			                }} >
+		                        <Icon name='ios-settings-outline' style={{color: '#333333', fontSize: 30}}/>
+		                    </Button>
+			            </ListItem>
+
+              		</Image>
+
+              	): (
+              		<Image resizeMode={Image.resizeMode.cover}
+		              source={require('../../../images/thumbnail.jpg')}>
+		              	<ListItem style={{borderBottomWidth: 0, padding: 30}}>
+			                {
+			                	this.state.avatarSource ? (
+			                		<Thumbnail source={this.state.avatarSource} style={{width: 100, height: 100, borderRadius: 100, marginLeft: 10}}/>
+			                	) : (
+			                		<Thumbnail source={require('../../../images/avatar.png')} style={{width: 100, height: 100, borderRadius: 100, marginLeft: 10}}/>
+			                	)
+			                }
+			                <Text style={{height: 40}}><H1>PHẠM NGỌC LINH</H1></Text>
+			                <Text note numberOfLines={5} style={{height: 40}}><H3 style={{color: '#05a5d1'}}>Email: pnlinh93@gmail.com</H3></Text>
+			                <Button transparent style={{
+			                	position: 'absolute',
+			                	right: 0,
+			                	top: 20,
+			                	height: 40
+			                }} >
+		                        <Icon name='ios-settings-outline' style={{color: '#333333', fontSize: 30}}/>
+		                    </Button>
+			            </ListItem>
+		            </Image>
+              	)
+            }
+
             {
               /*<Thumbnail size={100} source={require('../../../images/avatar.png')} />*/
             }
@@ -122,11 +283,11 @@ class Profile extends Component {
                                     <Text>Thay đổi ảnh bìa (Cover)</Text>
                                 </ListItem>
                               </List>
-                              <ListItem>
+                              <ListItem button onPress={() => this.loadImageFromDevice()}>
                                 <Radio selected={false} />
                                   <Text>Thay đổi ảnh đại diện (Avatar)</Text>
                               </ListItem>
-                              <ListItem>
+                              <ListItem button onPress={() => this.loadImageFromDeviceForCover()}>
                                   <Radio selected={true} />
                                   <Text>Thay đổi ảnh bìa (Cover)</Text>
                               </ListItem>

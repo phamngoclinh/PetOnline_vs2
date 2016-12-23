@@ -11,9 +11,10 @@ module.exports = StyleSheet.create({
 
   top: {
     flex: 1,
-    backgroundColor: '#0000ff',
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     padding: 10,
+    paddingTop: 0,
     width: ScreenWidth,
     minHeight: 150
   },
