@@ -68,9 +68,11 @@ class Home extends Component {
   componentDidMount() {
       let _this = this;
 
-      var x = _this._getStorageValue();
-      
-      _this._loadInitialState().done(function(){
+      // var x = _this._getStorageValue();
+
+      AsyncStorage.getItem('AUTH_TOKEN').then( (value) => {
+        authToken = value;
+
         _this.setState({
           is_loading_data: true
         });
@@ -97,7 +99,12 @@ class Home extends Component {
           });
             console.error(error);
         });
+
       });
+      
+      // _this._loadInitialState().done(function(){
+        
+      // });
 
       
   }
@@ -106,29 +113,29 @@ class Home extends Component {
   //   alert(authToken);
   // }
 
-  _loadInitialState = async () => {
-    // var x = AsyncStorage.getItem(GLOBAL.AUTH_TOKEN);
-    // console.log("================",x);
-    // alert("x = " + x);
-    try {
-      authToken = await AsyncStorage.getItem('AUTH_TOKEN');
-      // alert(authToken);
-      if (authToken !== null){
-        // this.replaceRoute('home');
-        this.setState({
-          authenticateToken : authToken
-        });
-      } else {
-        try {
-          //
-        } catch (error) {
-          //
-        }
-      }
-    } catch (error) {
-      //
-    }
-  };
+  // _loadInitialState = async () => {
+  //   // var x = AsyncStorage.getItem(GLOBAL.AUTH_TOKEN);
+  //   // console.log("================",x);
+  //   // alert("x = " + x);
+  //   try {
+  //     authToken = await AsyncStorage.getItem('AUTH_TOKEN');
+  //     // alert(authToken);
+  //     if (authToken !== null){
+  //       // this.replaceRoute('home');
+  //       this.setState({
+  //         authenticateToken : authToken
+  //       });
+  //     } else {
+  //       try {
+  //         //
+  //       } catch (error) {
+  //         //
+  //       }
+  //     }
+  //   } catch (error) {
+  //     //
+  //   }
+  // };
 
   pushRoute(route, index) {
     this.props.setIndex(index);
@@ -174,22 +181,22 @@ class Home extends Component {
     }
   };
 
-  getID = async () => {
-    try {
-      artId = await AsyncStorage.getItem('VIEW_ARTICLE_ID');
-    } catch (error) {
-      //
-      alert("Eror get" + "Eror save" + error);
-    }
-  }
+  // getID = async () => {
+  //   try {
+  //     artId = await AsyncStorage.getItem('VIEW_ARTICLE_ID');
+  //   } catch (error) {
+  //     //
+  //     alert("Eror get" + "Eror save" + error);
+  //   }
+  // }
 
-  _getStorageValue(){
-    AsyncStorage.getItem('VIEW_ARTICLE_ID').then((value) => {
-      return value;
-    }, (error) => {
-      console.log(error);
-    })
-  }
+  // _getStorageValue(){
+  //   AsyncStorage.getItem('VIEW_ARTICLE_ID').then((value) => {
+  //     return value;
+  //   }, (error) => {
+  //     console.log(error);
+  //   })
+  // }
 
 
   render() {

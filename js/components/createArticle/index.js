@@ -6,6 +6,7 @@ import { actions } from 'react-native-navigation-redux-helpers';
 import { Container, Header, Title, Content, Text, Button, Icon, Fab, View, Thumbnail, InputGroup, Input, Spinner } from 'native-base';
 
 import { openDrawer } from '../../actions/drawer';
+import template from '../../themes/style-template';
 import { setIndex } from '../../actions/list';
 import styles from './styles';
 
@@ -71,7 +72,7 @@ class CreateArticle extends Component {
   componentDidMount() {
     let _this = this;
 
-    _this._loadInitialState().done();
+    _this._loadInitialState();
   }
 
   popRoute() {
@@ -129,10 +130,10 @@ class CreateArticle extends Component {
     let _this = this;
 
     if(
-      // this.state.avatarSourceBase64 == '' ||
-      // this.state.avatarSourceBase64 == null ||  
-      // this.state.petName == '' || 
-      // this.state.petDate == '' || 
+      this.state.avatarSourceBase64 == '' ||
+      this.state.avatarSourceBase64 == null ||  
+      this.state.petName == '' || 
+      this.state.petDate == '' || 
       this.state.petPrice == ''
     ) {
       _this.setState({
@@ -208,25 +209,29 @@ class CreateArticle extends Component {
     }
   }
 
-  _loadInitialState = async () => {
-    try {
-      authToken = await AsyncStorage.getItem(AUTH_TOKEN);
-      // alert(authToken);
-      if (authToken !== null){
-        // this.replaceRoute('home');
-        this.setState({
-          authenticateToken : authToken
-        });
-      } else {
-        try {
-          //
-        } catch (error) {
-          //
-        }
-      }
-    } catch (error) {
-      //
-    }
+  _loadInitialState () {
+    AsyncStorage.getItem('AUTH_TOKEN').then( (value) => {
+      authToken = value;
+    });
+
+    // try {
+    //   authToken = await AsyncStorage.getItem(AUTH_TOKEN);
+    //   // alert(authToken);
+    //   if (authToken !== null){
+    //     // this.replaceRoute('home');
+    //     this.setState({
+    //       authenticateToken : authToken
+    //     });
+    //   } else {
+    //     try {
+    //       //
+    //     } catch (error) {
+    //       //
+    //     }
+    //   }
+    // } catch (error) {
+    //   //
+    // }
   };
 
   render() {
@@ -283,6 +288,7 @@ class CreateArticle extends Component {
                   onChangeText={articleBasePrice => this.setState({ articleBasePrice })} />
             </InputGroup>
 
+            {this.state.createArticleMessage ? <Text style={{ color: template.danger, alignSelf: 'center', marginTop: 15 }}>{this.state.createArticleMessage}</Text> : null}
             {this.state.is_loading ? <Spinner color='blue' visible={this.state.is_loading} /> : null}
 
             <Button large style={styles.createArticle} onPress={() => this.createArticle()}>CREATE ARTICLE</Button>

@@ -6,6 +6,7 @@ import { actions } from 'react-native-navigation-redux-helpers';
 import { Container, Header, Title, Content, Text, Button, Icon, Fab, View, Thumbnail, InputGroup, Input, Spinner } from 'native-base';
 
 import { openDrawer } from '../../actions/drawer';
+import template from '../../themes/style-template';
 import { setIndex } from '../../actions/list';
 import styles from './styles';
 
@@ -70,7 +71,7 @@ class CreatePet extends Component {
   componentDidMount() {
     let _this = this;
 
-    _this._loadInitialState().done();
+    _this._loadInitialState();
   }
 
   popRoute() {
@@ -207,25 +208,29 @@ class CreatePet extends Component {
     }
   }
 
-  _loadInitialState = async () => {
-    try {
-      authToken = await AsyncStorage.getItem(AUTH_TOKEN);
-      // alert(authToken);
-      if (authToken !== null){
-        // this.replaceRoute('home');
-        this.setState({
-          authenticateToken : authToken
-        });
-      } else {
-        try {
-          //
-        } catch (error) {
-          //
-        }
-      }
-    } catch (error) {
-      //
-    }
+  _loadInitialState () {
+    AsyncStorage.getItem('AUTH_TOKEN').then( (value) => {
+      authToken = value;
+    });
+
+    // try {
+    //   authToken = await AsyncStorage.getItem(AUTH_TOKEN);
+    //   // alert(authToken);
+    //   if (authToken !== null){
+    //     // this.replaceRoute('home');
+    //     this.setState({
+    //       authenticateToken : authToken
+    //     });
+    //   } else {
+    //     try {
+    //       //
+    //     } catch (error) {
+    //       //
+    //     }
+    //   }
+    // } catch (error) {
+    //   //
+    // }
   };
 
   render() {
@@ -282,6 +287,7 @@ class CreatePet extends Component {
                   onChangeText={petOther => this.setState({ petOther })} />
             </InputGroup>
 
+            {this.state.createPetMessage ? <Text style={{ color: template.danger, alignSelf: 'center', marginTop: 15 }}>{this.state.createPetMessage}</Text> : null}
             {this.state.is_loading ? <Spinner color='blue' visible={this.state.is_loading} /> : null}
 
             <Button large style={styles.createPet} onPress={() => this.createPet()}>CREATE PET</Button>

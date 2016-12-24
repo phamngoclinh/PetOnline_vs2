@@ -55,23 +55,25 @@ class Login extends Component {
   componentDidMount() {
     let _this = this;
 
-    // _this._removeToken().done();
+    // _this._removeToken();
 
-    _this._loadInitialState().done();
+    _this._loadInitialState();
 
 
     _this.setState({
       is_loading: false
     });
 
-    _this._getUserId().done();
+    // _this._getUserId();
   }
 
   _loadInitialState = async () => {
     try {
       var authToken = await AsyncStorage.getItem('AUTH_TOKEN');
+      console.log(authToken);
       if (authToken !== null){
         // alert(authToken);
+        console.log(authToken);
         this.replaceRoute('home');
         // alert("Check authToken is exist. authToken = " + authToken);
       } else {
@@ -158,7 +160,7 @@ class Login extends Component {
             });
 
             _this._saveUserId(responseJson.userAuthInfoId);
-            _this._authenticate(responseJson.authToken).done();
+            _this._authenticate(responseJson.authToken);
 
             // alert("Authenticate successfully: " + AsyncStorage.getItem(AUTH_TOKEN));
 
@@ -192,10 +194,10 @@ class Login extends Component {
 
   _getUserId = async () => {
     try {
-      var x = await AsyncStorage.getItem('USER_ID');
+      // var x = await AsyncStorage.getItem('USER_ID');
     } catch (error) {
-      console.log("Error: ", error);
-      alert(error);
+      // console.log("Error: ", error);
+      // alert(error);
     }
 
     // try {

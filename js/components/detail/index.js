@@ -51,9 +51,8 @@ class Detail extends Component {
   componentDidMount() {
     let _this = this;
     _this._getArticleId();
-    _this._authenticate().done(function() {
-      _this._getArticleOne();
-    });
+    _this._authenticate();
+    _this._getArticleOne();
   }
 
   componentWillMount() {
@@ -65,10 +64,10 @@ class Detail extends Component {
     });
   }
 
-  _authenticate = async () => {
+  _authenticate() {
     let _this = this;
 
-    await AsyncStorage.getItem('AUTH_TOKEN').then((value) => {
+    AsyncStorage.getItem('AUTH_TOKEN').then((value) => {
       authToken = value;
     }, (error) => {
       alert("Bạn cần có quyền truy cập vào trang này");
@@ -84,6 +83,8 @@ class Detail extends Component {
       _this.setState({
         detailId : value
       });
+
+      console.log("==== Get Article detail by Id: ", value);
     }, (error) => {
       alert("Không tìm thấy bài viết. Vui lòng thử lại");
     }).catch((error) => {
@@ -114,7 +115,7 @@ class Detail extends Component {
           is_loading_data: false
         });
 
-        console.log(responseJson);
+        console.log("responseJson: ", responseJson);
     })
     .catch((error) => {
         _this.setState({
@@ -158,7 +159,9 @@ class Detail extends Component {
                   </CardItem>
 
                   <CardItem>                        
-                      <Image style={{ resizeMode: 'cover', width: null }} source={{uri : petAlbum + this.state.data.Pet.Image.thumbnail}} /> 
+                      {
+                        /*<Image style={{ resizeMode: 'cover', width: null }} source={{uri : petAlbum + this.state.data.Pet.Image.thumbnail}} /> */
+                      }
                   </CardItem>
                   <CardItem style={{flex: 0, flexDirection: 'row'}}>
                       <Button transparent>
