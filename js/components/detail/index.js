@@ -19,6 +19,7 @@ const petAlbum = 'http://210.211.118.178/PetsAPI/Images/PetThumbnails/';
 const userAlbum = 'http://210.211.118.178/PetsAPI/Images/UserThumbnails/';
 
 var authToken = '';
+var detail_id = '';
 
 class Detail extends Component {
 
@@ -44,20 +45,20 @@ class Detail extends Component {
           is_loading_data : 'true',
           authToken: '',
           detailId: '',
-          data : null
+          data : null,
+          is_search: false
       };
   }
 
   componentDidMount() {
     let _this = this;
-    _this._getArticleId();
     _this._authenticate();
-    _this._getArticleOne();
+    _this._getArticleId();
   }
 
   componentWillMount() {
     let _this = this;
-    _this._getArticleId();
+    // _this._getArticleId();
 
     _this.setState({
       is_loading_data: false
@@ -80,11 +81,16 @@ class Detail extends Component {
     let _this = this;
 
     AsyncStorage.getItem('VIEW_ARTICLE_ID').then((value) => {
+      detail_id = value;
+
       _this.setState({
         detailId : value
       });
 
       console.log("==== Get Article detail by Id: ", value);
+
+      _this._getArticleOne();
+
     }, (error) => {
       alert("Không tìm thấy bài viết. Vui lòng thử lại");
     }).catch((error) => {
@@ -99,7 +105,9 @@ class Detail extends Component {
       is_loading_data: true
     });
 
-    fetch('http://210.211.118.178/PetsAPI/api/articles/'+_this.state.detailId+'/detail', {
+    console.log("=====================" + authToken);
+
+    fetch('http://210.211.118.178/PetsAPI/api/articles/'+detail_id+'/detail', {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
@@ -125,17 +133,47 @@ class Detail extends Component {
     });
   }
 
+  callMobile(number_phone) {
+    Linking.canOpenURL('tel:' + number_phone).then(supported => {
+      if (supported) {
+        Linking.openURL('tel:' + number_phone);
+      } else {
+        console.log('Don\'t know how to open URI: ' + 'tel:' + number_phone);
+      }
+    });
+  }
+
   render() {
     const { props: { name, index, list } } = this;
 
     return (
       <Container style={styles.container}>
+        {
+
+          this.state.is_search ?
+            (
+              <Header searchBar rounded>
+                  <InputGroup>
+                      <Icon name="ios-search" />
+                      <Input placeholder="Tìm kiếm thú cưng..." value={this.state.search}  onChangeText={(text) => this.setState({search:text})} onSubmitEditing={()=>this.search()}/>
+                      <Button transparent onPress={()=> this.setState({is_search: false})}><Icon style={{color: '#333333'}} name='ios-close-circle' /></Button>
+                  </InputGroup>
+                  <Button transparent>Search</Button>
+              </Header>
+            )
+            : null
+        }
+
         <Header>
           <Button transparent onPress={() => this.popRoute()}>
             <Icon name="ios-arrow-back" />
           </Button>
 
-          <Title>{this.state.data ? this.state.data.title : 'Detail'}</Title>
+          <Title>{(name) ? this.props.name : 'Chi tiết bài viết'}</Title>
+
+          <Button transparent onPress={() => this.setState({is_search: true})}>
+              <Icon name="ios-search" />
+          </Button>
 
           <Button transparent onPress={this.props.openDrawer}>
             <Icon name="ios-menu" />
@@ -147,12 +185,12 @@ class Detail extends Component {
           
           {
             this.state.data ? (
-              <Card style={{ flex: 0, marginTop: 10 }}>
-                  <CardItem>
+              <Card style={{ flex: 0, marginTop: 10, borderWidth: .5, borderColor: '#FFFAFA' }}>
+                  <CardItem style={{backgroundColor: '#FFFFFA', borderBottomWidth: 0}}>
                       {
                         /*this.state.data.Pet.User.avatarThumbnail ? <Thumbnail source={{uri : userAlbum + this.state.data.Pet.User.avatarThumbnail}} /> : null*/
                       }
-                      <Text>{this.state.data.title}</Text>
+                      <Text style={{fontSize: 17}}>{this.state.data.title}</Text>
                       {
                         /*<Text note>{this.state.data.Pet.User.firstName ? 'Linh' : 'Linh'} {this.state.data.Pet.User.lastName ? 'Linh' : 'Linh'}</Text>*/
                       }
@@ -160,7 +198,7 @@ class Detail extends Component {
 
                   <CardItem>                        
                       {
-                        /*<Image style={{ resizeMode: 'cover', width: null }} source={{uri : petAlbum + this.state.data.Pet.Image.thumbnail}} /> */
+                        <Image style={{ resizeMode: 'cover', width: null }} source={{uri : petAlbum + this.state.data.Pet.Image.thumbnail}} />
                       }
                   </CardItem>
                   <CardItem style={{flex: 0, flexDirection: 'row'}}>
@@ -174,22 +212,25 @@ class Detail extends Component {
                       </Button>
                       <Button transparent>
                           <Icon name="ios-pricetags-outline" />
-                          Chó / Mèo / ...
+                          Chó
                       </Button>
                       <Button>
                           <Icon name="ios-phone-portrait-outline" />
-                          CALL NOW
+                          GỌI NGAY
                       </Button>
+
+                      {
+                        /*
+                        <Button onPress={() => {this.callMobile(members.Pet.User.phone)}}>
+                            <Icon name="ios-phone-portrait-outline" />
+                            GỌI NGAY
+                        </Button>
+                        */
+                      }
                   </CardItem>
 
-                  <CardItem>
-                      <Text>{this.state.data.content}</Text>
-                  </CardItem>
-
-                  <CardItem style={{flex: 0, flexDirection: 'row'}}>
-                      <Button transparent style={{ alignSelf: 'center'}}>
-                          VIEW MORE
-                      </Button>
+                  <CardItem style={{backgroundColor: '#fdfdfd', borderBottomWidth: 0}}>
+                      <Text style={{color: '#384850'}}>{this.state.data.content}</Text>
                   </CardItem>
              </Card>
             ) : null

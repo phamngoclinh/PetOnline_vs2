@@ -17,18 +17,33 @@ module.exports = StyleSheet.create({
   top: {
     width: ScreenWidth - 0.2 * ScreenWidth,
     flex: 2,
-    maxHeight: 70,
-    backgroundColor: '#333',
+    // padding: 20,
+    justifyContent: 'space-between',
+    alignSelf: 'center',
+    maxHeight: 140,
+    backgroundColor: '#f5f5f5',
+    borderRightWidth: 0,
+    borderBottomWidth: 1,
+    borderBottomColor: '#efefef'
+  },
+
+  topWrapper: {
+    width: ScreenWidth - 0.2 * ScreenWidth,
+    maxHeight: 140,
   },
 
   middle: {
     flex: 8,
-    backgroundColor: '#ccc',
+    backgroundColor: '#ffffff',
   },
 
   bottom: {
     flex: 1,
+    flexDirection: 'row',
     // alignSelf: 'flex-end',
-    backgroundColor: '#333'
+    borderRadius: 0,
+    borderTopColor: '#efefef',
+    borderLeftWidth: 0,
+    backgroundColor: '#f5f5f5'
   }
 });

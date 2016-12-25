@@ -64,7 +64,8 @@ class CreatePet extends Component {
           petOther: '',
           is_loading: false,
           authenticateToken: '',
-          createPetMessage: ''
+          createPetMessage: '',
+          is_search: false
       };
   }
 
@@ -238,12 +239,32 @@ class CreatePet extends Component {
 
     return (
       <Container style={styles.container}>
+        {
+
+          this.state.is_search ?
+            (
+              <Header searchBar rounded>
+                  <InputGroup>
+                      <Icon name="ios-search" />
+                      <Input placeholder="Tìm kiếm thú cưng..." value={this.state.search}  onChangeText={(text) => this.setState({search:text})} onSubmitEditing={()=>this.search()}/>
+                      <Button transparent onPress={()=> this.setState({is_search: false})}><Icon style={{color: '#333333'}} name='ios-close-circle' /></Button>
+                  </InputGroup>
+                  <Button transparent>Search</Button>
+              </Header>
+            )
+            : null
+        }
+
         <Header>
           <Button transparent onPress={() => this.popRoute()}>
             <Icon name="ios-arrow-back" />
           </Button>
 
-          <Title>{(name) ? this.props.name : 'Create Pet'}</Title>
+          <Title>{(name) ? this.props.name : 'Tạo thú cưng'}</Title>
+
+          <Button transparent onPress={() => this.setState({is_search: true})}>
+              <Icon name="ios-search" />
+          </Button>
 
           <Button transparent onPress={this.props.openDrawer}>
             <Icon name="ios-menu" />

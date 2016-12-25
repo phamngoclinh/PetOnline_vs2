@@ -56,6 +56,7 @@ class Profile extends Component {
           avatarSourceBase64: '',
           coverSource: null,
           coverSourceBase64: '',
+          is_search: false
       };
   }
 
@@ -148,12 +149,32 @@ class Profile extends Component {
 
     return (
       <Container style={styles.container}>
+        {
+
+          this.state.is_search ?
+            (
+              <Header searchBar rounded>
+                  <InputGroup>
+                      <Icon name="ios-search" />
+                      <Input placeholder="Tìm kiếm thú cưng..." value={this.state.search}  onChangeText={(text) => this.setState({search:text})} onSubmitEditing={()=>this.search()}/>
+                      <Button transparent onPress={()=> this.setState({is_search: false})}><Icon style={{color: '#333333'}} name='ios-close-circle' /></Button>
+                  </InputGroup>
+                  <Button transparent>Search</Button>
+              </Header>
+            )
+            : null
+        }
+
         <Header>
           <Button transparent onPress={() => this.popRoute()}>
             <Icon name="ios-arrow-back" />
           </Button>
 
-          <Title>{(name) ? this.props.name : 'Profile'}</Title>
+          <Title>{(name) ? this.props.name : 'Thông tin cá nhân'}</Title>
+
+          <Button transparent onPress={() => this.setState({is_search: true})}>
+              <Icon name="ios-search" />
+          </Button>
 
           <Button transparent onPress={this.props.openDrawer}>
             <Icon name="ios-menu" />
@@ -273,16 +294,20 @@ class Profile extends Component {
                           </CardItem>
 
                           <CardItem>                    
-                              <List>
-                                <ListItem button>
-                                    <Thumbnail source={require('../../../images/avatar.png')} />
-                                    <Text>Thay đổi ảnh đại diện (Avatar)</Text>
-                                </ListItem>
-                                        <ListItem button>
-                                    <Thumbnail source={require('../../../images/avatar.png')} />
-                                    <Text>Thay đổi ảnh bìa (Cover)</Text>
-                                </ListItem>
-                              </List>
+                              {
+                                /*
+                                <List>
+                                  <ListItem button>
+                                      <Thumbnail source={require('../../../images/avatar.png')} />
+                                      <Text>Thay đổi ảnh đại diện (Avatar)</Text>
+                                  </ListItem>
+                                          <ListItem button>
+                                      <Thumbnail source={require('../../../images/avatar.png')} />
+                                      <Text>Thay đổi ảnh bìa (Cover)</Text>
+                                  </ListItem>
+                                </List>
+                                */
+                              }
                               <ListItem button onPress={() => this.loadImageFromDevice()}>
                                 <Radio selected={false} />
                                   <Text>Thay đổi ảnh đại diện (Avatar)</Text>

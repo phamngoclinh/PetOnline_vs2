@@ -1,5 +1,6 @@
 
 import React, { Component } from 'react';
+import { Image } from 'react-native';
 import { connect } from 'react-redux';
 import { actions } from 'react-native-navigation-redux-helpers';
 import { Container, Header, Title, Content, Text, Button, Icon, Grid, Col, InputGroup, Input } from 'native-base';
@@ -48,7 +49,7 @@ class Category extends Component {
         loading: true,
         is_loading_data: true
     });
-    this.pushRoute('search', 3);
+    this.pushRoute('search', 1);
     var that = this;
   }
 
@@ -73,8 +74,8 @@ class Category extends Component {
               <Header searchBar rounded>
                   <InputGroup>
                       <Icon name="ios-search" />
-                      <Input placeholder="Search..." value={this.state.search}  onChangeText={(text) => this.setState({search:text})} onSubmitEditing={()=>this.search()}/>
-                      <Button transparent onPress={()=> this.setState({is_search: false})}>Close</Button>
+                      <Input placeholder="Tìm kiếm thú cưng..." value={this.state.search}  onChangeText={(text) => this.setState({search:text})} onSubmitEditing={()=>this.search()}/>
+                      <Button transparent onPress={()=> this.setState({is_search: false})}><Icon style={{color: '#333333'}} name='ios-close-circle' /></Button>
                   </InputGroup>
                   <Button transparent>Search</Button>
               </Header>
@@ -87,7 +88,7 @@ class Category extends Component {
             <Icon name="ios-arrow-back" />
           </Button>
 
-          <Title>{(name) ? this.props.name : 'Category'}</Title>
+          <Title>{(name) ? this.props.name : 'Danh mục'}</Title>
 
           <Button transparent onPress={() => this.setState({is_search: true})}>
               <Icon name="ios-search" />
@@ -100,17 +101,18 @@ class Category extends Component {
 
         <Content padder>
           <View style={{flex: 0, flexDirection: 'row'}}>
-              <View style={{ backgroundColor: '#D954D7', flex: 1, flexDirection: 'column', height: null}}>
-                  <Button block style={{height: 150}} onPress={() => this.pushRoute('detail', 1)}>CATEGORY #1</Button>
-                  <Button block style={{height: 150}} onPress={() => this.pushRoute('detail', 1)}>CATEGORY #3</Button>
-                  <Button block style={{height: 150}} onPress={() => this.pushRoute('detail', 1)}>CATEGORY #5</Button>
-                  <Button block style={{height: 150}} onPress={() => this.pushRoute('detail', 1)}>CATEGORY #7</Button>
+              <View style={{flex: 1, flexDirection: 'column', height: ScreenHeight - 100, justifyContent: 'space-between', paddingRight: 5}}>
+                  <Button block large style={{height: ((ScreenHeight - 100) / 3) - 5}} onPress={() => this.pushRoute('detail', 3)}>
+                    
+                    CHÓ
+                  </Button>
+                  <Button block large style={{height: ((ScreenHeight - 100) / 3) - 5}} onPress={() => this.pushRoute('detail', 3)}>MÈO</Button>
+                  <Button block large style={{height: ((ScreenHeight - 100) / 3) - 5}} onPress={() => this.pushRoute('detail', 3)}>CHIM</Button>
               </View>
-              <View style={{ backgroundColor: '#D93735', flex: 1, height: null}}>
-                  <Button block style={{height: 150}} onPress={() => this.pushRoute('detail', 1)}>CATEGORY #2</Button>
-                  <Button block style={{height: 150}} onPress={() => this.pushRoute('detail', 1)}>CATEGORY #3</Button>
-                  <Button block style={{height: 150}} onPress={() => this.pushRoute('detail', 1)}>CATEGORY #4</Button>
-                  <Button block style={{height: 150}} onPress={() => this.pushRoute('detail', 1)}>CATEGORY #8</Button>
+              <View style={{flex: 1, flexDirection: 'column', height: ScreenHeight - 100, justifyContent: 'space-between', paddingLeft: 5}}>
+                  <Button block large style={{height: ((ScreenHeight - 100) / 3) - 5}} onPress={() => this.pushRoute('detail', 3)}>CÁ</Button>
+                  <Button block large style={{height: ((ScreenHeight - 100) / 3) - 5}} onPress={() => this.pushRoute('detail', 3)}>BÒ SÁT</Button>
+                  <Button block warning bordered large style={{height: ((ScreenHeight - 100) / 3) - 5}} onPress={() => this.pushRoute('detail', 3)}>KHÁC</Button>
               </View>
           </View>
         </Content>

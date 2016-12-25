@@ -115,7 +115,7 @@ class AppNavigator extends Component {
       <Drawer
         ref={(ref) => { this._drawer = ref; }}
         type="overlay"
-        tweenDuration={150}
+        tweenDuration={100}
         content={<SideBar />}
         tapToClose
         acceptPan={false}

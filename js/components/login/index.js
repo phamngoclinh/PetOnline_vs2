@@ -70,10 +70,7 @@ class Login extends Component {
   _loadInitialState = async () => {
     try {
       var authToken = await AsyncStorage.getItem('AUTH_TOKEN');
-      console.log(authToken);
       if (authToken !== null){
-        // alert(authToken);
-        console.log(authToken);
         this.replaceRoute('home');
         // alert("Check authToken is exist. authToken = " + authToken);
       } else {
@@ -159,7 +156,9 @@ class Login extends Component {
               is_loading: false
             });
 
-            _this._saveUserId(responseJson.userAuthInfoId);
+            // console.log("UserId: ", responseJson.userAuthInfoId);
+
+            _this._saveUserId(responseJson.userAuthInfoId.toString());
             _this._authenticate(responseJson.authToken);
 
             // alert("Authenticate successfully: " + AsyncStorage.getItem(AUTH_TOKEN));
@@ -192,13 +191,13 @@ class Login extends Component {
     }
   }
 
-  _getUserId = async () => {
-    try {
+  // _getUserId = async () => {
+    // try {
       // var x = await AsyncStorage.getItem('USER_ID');
-    } catch (error) {
+    // } catch (error) {
       // console.log("Error: ", error);
       // alert(error);
-    }
+    // }
 
     // try {
     //   const value = await AsyncStorage.getItem('AUTH_TOKEN');
@@ -209,7 +208,7 @@ class Login extends Component {
     // } catch (error) {
     //   // Error retrieving data
     // }
-  }
+  // }
 
   _saveUserInfo(userId, userEmail = '', userPhone = '', userFirstName = '', userLastName = '') {
     alert("userId: " + userId);

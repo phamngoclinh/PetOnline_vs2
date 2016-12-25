@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import { TouchableOpacity, Image, Modal, AsyncStorage } from 'react-native';
+import { TouchableOpacity, Linking, Image, Modal, AsyncStorage } from 'react-native';
 import { connect } from 'react-redux';
 import { actions } from 'react-native-navigation-redux-helpers';
 import { Container, Header, Title, Content, H1, H2, H3, H4, Card, CardItem, Text, Button, Icon, InputGroup, Input, Thumbnail, List, ListItem, Spinner, Footer, FooterTab, Badge } from 'native-base';
@@ -69,6 +69,10 @@ class Home extends Component {
       let _this = this;
 
       // var x = _this._getStorageValue();
+
+      AsyncStorage.getItem('USER_ID').then( (value) => {
+      	console.log("USER_ID IN HOME: ", value);
+      });
 
       AsyncStorage.getItem('AUTH_TOKEN').then( (value) => {
         authToken = value;
@@ -165,6 +169,16 @@ class Home extends Component {
     this.setState({modalVisible: visible});
   }
 
+  callMobile(number_phone) {
+    Linking.canOpenURL('tel:' + number_phone).then(supported => {
+      if (supported) {
+        Linking.openURL('tel:' + number_phone);
+      } else {
+        console.log('Don\'t know how to open URI: ' + 'tel:' + number_phone);
+      }
+    });
+  }
+
   viewDetail(id) {
     let _this = this;
     _this._saveDetailId(id);
@@ -209,8 +223,8 @@ class Home extends Component {
               <Header searchBar rounded>
                   <InputGroup>
                       <Icon name="ios-search" />
-                      <Input placeholder="Search..." value={this.state.search}  onChangeText={(text) => this.setState({search:text})} onSubmitEditing={()=>this.search()}/>
-                      <Button transparent onPress={()=> this.setState({is_search: false})}>Close</Button>
+                      <Input placeholder="Tìm kiếm thú cưng..." value={this.state.search}  onChangeText={(text) => this.setState({search:text})} onSubmitEditing={()=>this.search()}/>
+                      <Button transparent onPress={()=> this.setState({is_search: false})}><Icon style={{color: '#333333'}} name='ios-close-circle' /></Button>
                   </InputGroup>
                   <Button transparent>Search</Button>
               </Header>
@@ -223,7 +237,7 @@ class Home extends Component {
             <Icon name="ios-menu" />
           </Button>
 
-          <Title>{(this.props.name) ? this.props.name : 'Home'}</Title>
+          <Title>{(this.props.name) ? this.props.name : 'Trang chủ'}</Title>
 
           <Button transparent onPress={() => this.setState({is_search: true})}>
             <Icon name="ios-search" />
@@ -239,7 +253,7 @@ class Home extends Component {
                   <Card key={members.id} style={{ flex: 0, marginBottom: 10, borderWidth: .5, borderColor: '#FFFAFA'}}>
                       <CardItem style={{backgroundColor: '#FFFFFA', borderBottomWidth: 0}}>
                           <Thumbnail source={{uri : userAlbum + members.Pet.User.avatarThumbnail}} />
-                          <Text onPress={() => this.viewDetail(members.id)}>{members.title}</Text>
+                          <Text onPress={() => this.viewDetail(members.id)} style={{fontSize: 17}}>{members.title}</Text>
                           <Text note>{members.Pet.User.firstName} {members.Pet.User.lastName}</Text>
                       </CardItem>
 
@@ -255,30 +269,48 @@ class Home extends Component {
                           <Image style={styles.mainPicture} source={{uri : petAlbum + members.Pet.Image.thumbnail}} />
                       </CardItem>
 
-                      <CardItem>
-                          <Text>
+                      <CardItem style={{backgroundColor: '#fdfdfd', borderBottomWidth: 0}}>
+                          <Text style={{color: '#384850'}}>
                               {members.content}
-                          </Text>
-                          <Text note>
-                            <Icon name="ios-calendar-outline" style={{marginRight: 10}}/>
-                            Ngày đăng: {members.createdOn}
-                          </Text>
-                          <Text note>
-                            <Icon name="ios-eye-outline" style={{marginRight: 10}}/>
-                            Lượt xem: {members.view}
                           </Text>
                       </CardItem>
 
+                      <CardItem style={{backgroundColor: '#fdfdfd', borderTopWidth: 0, flexDirection: 'row', justifyContent: 'space-between', borderBottomColor: '#f9f9f9'}}>
+                        <Button transparent>
+	                        <Icon name='ios-calendar-outline' />
+	                        <Text note>Ngày đăng: {members.createdOn}</Text>
+	                    </Button>
+	                    <Button transparent>
+	                        <Icon name='ios-eye-outline' />
+	                        <Text note>Lượt xem: {members.view}</Text>
+	                    </Button>
+	                    <Button transparent>
+	                        <Icon name='ios-camera-outline' />
+	                        <Text note>Hình ảnh: {members.view}</Text>
+	                    </Button>
+                      </CardItem>
+
                       <CardItem style={{flex: 0, flexDirection: 'row'}}>
-                          <Button transparent>
+                          <Button success block bordered>
                               <Icon name="ios-pricetag-outline" />
                               <Text>Giá bán: {members.price} VNĐ</Text>
                           </Button>
                           
-                          <Button rounded danger onPress={() => {this.setModalVisible(true)}}>
+                          {
+                          	/*
+                          	<Button rounded danger onPress={() => {this.setModalVisible(true)}}>
                               <Icon name="ios-call" />
                               {members.Pet.User.phone}
                           </Button>
+                          	*/
+                          }
+
+                          <Button rounded primary onPress={() => {this.callMobile(members.Pet.User.phone)}}>
+                              <Icon name="ios-call" />
+                              {members.Pet.User.phone}
+                          </Button>
+
+                          
                       </CardItem>
                  </Card>
                 )
