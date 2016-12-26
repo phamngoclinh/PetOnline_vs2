@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import { View, Image, ScrollView, Dimensions, AsyncStorage } from 'react-native';
+import { View, Image, ScrollView, Dimensions, AsyncStorage, Alert } from 'react-native';
 import { connect } from 'react-redux';
 import { actions } from 'react-native-navigation-redux-helpers';
 import { Container, Header, Title, Content, H1, H3, Text, Button, Radio, Tabs, Icon, Thumbnail, List, ListItem, InputGroup, Input, Card, CardItem, Grid, Col } from 'native-base';
@@ -78,7 +78,13 @@ class Profile extends Component {
 
           avatarThumbnail : '',
           coverThumbnail : '',
-          coverOption: ''
+          coverOption: '',
+          changeUsername: '',
+          changeFirstName: '',
+          changeLastName: '',
+          changeEmail : '',
+          changePhone : '',
+          changeAddress: ''
       };
   }
 
@@ -382,6 +388,77 @@ class Profile extends Component {
     }
   }
 
+  _updateUserInformation() {
+    let _this = this;
+
+    if(this.state.changeLastName == '') {
+      _this.setState({
+        changeUserInfoMessage: 'Vui lòng nhập thông tin trước khi gửi'
+      });
+    } else {
+      _this.setState({
+        is_loading: true
+      });
+      // ...
+      fetch('http://210.211.118.178/PetsAPI/api/userauthinfos/'+userId, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Auth-Token': authToken
+        },
+        body: JSON.stringify({
+          "email": this.state.changeEmail ? this.state.changeEmail : this.state.user.email,
+          "phone": this.state.changePhone ? this.state.changePhone : this.state.user.phone,
+          "nationality": this.state.changeAddress ? this.state.changeAddress : this.state.user.nationality,
+          "firstName": this.state.changeFirstName ? this.state.changeFirstName : this.state.user.changeFirstName,
+          "lastName" : this.state.changeLastName ? this.state.changeLastName : this.state.user.changeLastName
+        })
+      })
+      .then((response) => response.json())
+      .then((responseJson) => {
+          // Store the results in the state variable results and set loading to
+          console.log(responseJson);
+
+          if(responseJson.errorCode) {
+            console.log("Code: "+ responseJson.errorMsg);
+            _this.setState({
+              is_loading: false,
+              changeUserInfoMessage: responseJson.errorMsg
+            });
+            Alert.alert(
+              "Thông báo",
+              responseJson.errorMsg,
+              [
+                {text: 'Quay lại', onPress: () => console.log('Quay lại pressed'), style: 'cancel'}
+              ]
+            );            
+          } else {
+            _this.setState({
+              data: responseJson,
+              is_loading: false,
+              changeUserInfoMessage: "Cập nhật thành công"
+            });
+          }
+      })
+      .catch((error) => {
+          _this.setState({
+              is_loading: false,
+              changeUserInfoMessage: error
+          });
+          Alert.alert(
+            "Lỗi",
+            "Lỗi phát sinh trong quá trình truyền tải. Vui lòng thử lại!",
+            [
+              {text: 'OK', onPress: () => console.log('OK Pressed')},
+            ]
+          );
+          console.log(error);
+      });
+
+    }
+  }
+
   render() {
     const { props: { name, index, list } } = this;
 
@@ -498,28 +575,41 @@ class Profile extends Component {
                               <List>
                                 <ListItem>
                                     <InputGroup>
-                                        <Input inlineLabel label="Họ tên" placeholder="Phạm Ngọc Linh" />
+                                        <Input inlineLabel label="Họ" onChangeText={changeLastName => this.setState({ changeLastName })} placeholder={this.state.user.lastName} />
                                     </InputGroup>
                                 </ListItem>
                                 <ListItem>
                                     <InputGroup>
-                                        <Input inlineLabel label="Địa chỉ email" placeholder="pnlinh93@gmail.com" />
+                                        <Input inlineLabel label="Tên" onChangeText={changeFirstName => this.setState({ changeFirstName })} placeholder={this.state.user.firstName} />
                                     </InputGroup>
                                 </ListItem>
                                 <ListItem>
                                     <InputGroup>
-                                        <Input inlineLabel label="Số điện thoại" placeholder="012356789" />
+                                        <Input inlineLabel label="Địa chỉ email" onChangeText={changeEmail => this.setState({ changeEmail })} placeholder={this.state.email} />
+                                    </InputGroup>
+                                </ListItem>
+                                <ListItem>
+                                    <InputGroup>
+                                        <Input inlineLabel label="Số điện thoại" onChangeText={changePhone => this.setState({ changePhone })} placeholder={this.state.phone} />
                                     </InputGroup>
                                 </ListItem>
                                 
                                 <ListItem>
                                     <InputGroup >
-                                        <Input stackedLabel label="Đại chỉ" placeholder="21 Nguyễn Trãi, Phường 15, Quận 5, TP. Hồ Chí Minh" />
+                                        <Input stackedLabel label="Đại chỉ" onChangeText={changeAddress => this.setState({ changeAddress })} placeholder={this.state.user.nationality ? this.state.user.nationality : 'Thông tin này chưa được cập nhật'} />
                                     </InputGroup>
                                 </ListItem>
                               </List>
 
-                              <Button rounded bordered block style={{maxWidth: 150, alignSelf: 'center', width: 150, marginTop: 20, marginBottom: 20}}> Cập nhật </Button>
+                              <View>
+                                  {
+                                    this.state.changeUserInfoMessage ? 
+                                    <Text style={{ color: template.danger, alignSelf: 'center', marginTop: 10 }}>{this.state.changeUserInfoMessage}</Text>
+                                     : null
+                                  }
+                              </View>
+
+                              <Button onPress = {() => this._updateUserInformation()} rounded bordered block style={{maxWidth: 150, alignSelf: 'center', width: 150, marginTop: 20, marginBottom: 20}}> Cập nhật </Button>
                           </CardItem>
 
                           <CardItem header>                        
@@ -573,12 +663,12 @@ class Profile extends Component {
                                 </List>
                                 */
                               }
-                              <ListItem button onPress={() => this.loadImageFromDevice()}>
-                                <Radio selected={false} />
+                              <ListItem iconRight button onPress={() => this.loadImageFromDevice()}>
+                                  <Icon name="ios-image-outline" style={{ color: '#0A69FE' }} />
                                   <Text>Thay đổi ảnh đại diện (Avatar)</Text>
                               </ListItem>
-                              <ListItem button onPress={() => this.loadImageFromDeviceForCover()}>
-                                  <Radio selected={true} />
+                              <ListItem iconRight button onPress={() => this.loadImageFromDeviceForCover()}>
+                                  <Icon name="ios-images-outline" style={{ color: '#0A69FE' }} />
                                   <Text>Thay đổi ảnh bìa (Cover)</Text>
                               </ListItem>
                               <View>
