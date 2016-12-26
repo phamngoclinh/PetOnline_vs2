@@ -1,16 +1,21 @@
 
 import React, { Component } from 'react';
-import { View, Image, ScrollView, Dimensions } from 'react-native';
+import { View, Image, ScrollView, Dimensions, AsyncStorage } from 'react-native';
 import { connect } from 'react-redux';
 import { actions } from 'react-native-navigation-redux-helpers';
 import { Container, Header, Title, Content, H1, H3, Text, Button, Radio, Tabs, Icon, Thumbnail, List, ListItem, InputGroup, Input, Card, CardItem, Grid, Col } from 'native-base';
 
 import { openDrawer } from '../../actions/drawer';
+import template from '../../themes/style-template';
 import styles from './styles';
 
 const {
   popRoute,
 } = actions;
+
+const apiLink = 'http://210.211.118.178/PetsAPI/';
+const petAlbum = 'http://210.211.118.178/PetsAPI/Images/PetThumbnails/';
+const userAlbum = 'http://210.211.118.178/PetsAPI/Images/UserThumbnails/';
 
 var Platform = require('react-native').Platform;
 var ImagePicker = require('react-native-image-picker');
@@ -30,6 +35,11 @@ var options = {
   }
 };
 
+
+var authToken = '';
+var userId = '';
+var avatarThumbnail = '';
+var coverThumbnail = '';
 
 class Profile extends Component {
 
@@ -56,8 +66,28 @@ class Profile extends Component {
           avatarSourceBase64: '',
           coverSource: null,
           coverSourceBase64: '',
-          is_search: false
+          is_search: false,
+
+          data : null,
+          is_loading: false,
+          changeImageMessage: '',
+          user: '',
+          username: '',
+          email: '',
+          phone: '',
+
+          avatarThumbnail : '',
+          coverThumbnail : '',
+          coverOption: ''
       };
+  }
+
+  componentDidMount() {
+    let _this = this;
+
+    _this._loadInitialState();
+
+    _this._getUserInformation();
   }
 
   loadImageFromDevice() {
@@ -136,12 +166,220 @@ class Profile extends Component {
         }
 
         this.setState({
-          coverSource: source
+          coverSource: source,
+          coverOption: source
         });
 
         console.log("Source: ", source);
       }
     });
+  }
+
+  _loadInitialState () {
+    AsyncStorage.getItem('AUTH_TOKEN').then( (value) => {
+      authToken = value;
+    });
+
+    AsyncStorage.getItem('USER_ID').then((value) => {
+      userId = value;
+    });
+  };
+
+  _getUserInformation() {
+    let _this = this;
+    AsyncStorage.getItem('USER_ID').then((value) => {
+      console.log("UserId in sidebar: ", value);
+      // alert("UserId in sidebar: ", value);
+
+      fetch('http://210.211.118.178/PetsAPI/api/userauthinfos/'+value, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Auth-Token': authToken
+        }
+      })
+      .then((response) => response.json())
+      .then((responseJson) => {
+          // Store the results in the state variable results and set loading to
+          _this.setState({
+            user: responseJson,
+            username: responseJson.firstName + " " + responseJson.lastName,
+            email: responseJson.email,
+            phone: responseJson.phone,
+            is_loading_data: false,
+            avatarThumbnail : responseJson.avatarThumbnail,
+            coverThumbnail : responseJson.coverThumbnail,
+            coverOption: {uri: userAlbum + responseJson.coverThumbnail}
+          });
+
+          
+
+          avatarThumbnail = responseJson.avatarThumbnail;
+          coverThumbnail = responseJson.coverThumbnail;
+
+          if(avatarThumbnail == null || avatarThumbnail == '') {
+            avatarThumbnail = '../../../images/avatar.png';
+          }
+
+          if(coverThumbnail == null || coverThumbnail == '') {
+            coverThumbnail = '../../../images/thumbnail.jpg';
+          }
+
+          console.log("Get USER from server: ", responseJson);
+      })
+      .catch((error) => {
+          _this.setState({
+            loading: false
+        });
+          console.error(error);
+      });
+    });
+  }
+
+  _updateAvatar() {
+    let _this = this;
+
+    if(this.state.avatarSourceBase64 == '') {
+      _this.setState({
+        changeImageMessage: 'Vui lòng chọn hình ảnh tải lên'
+      });
+    } else {
+      _this.setState({
+        is_loading: true
+      });
+      // ...
+      fetch('http://210.211.118.178/PetsAPI/api/userauthinfos/'+userId+'/updateavatar', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Auth-Token': authToken
+        },
+        body: JSON.stringify({
+          "avatarThumbNailInBase64": this.state.avatarSourceBase64
+        })
+      })
+      .then((response) => response.json())
+      .then((responseJson) => {
+          // Store the results in the state variable results and set loading to
+          console.log(responseJson);
+
+          if(responseJson.errorCode) {
+            console.log("Code: "+ responseJson.errorMsg);
+            _this.setState({
+              is_loading: false
+            });
+            Alert.alert(
+              "Thông báo",
+              responseJson.errorMsg,
+              [
+                {text: 'Quay lại', onPress: () => console.log('Quay lại pressed'), style: 'cancel'}
+              ]
+            );            
+          } else {
+            _this.setState({
+              data: responseJson,
+              is_loading: false,
+              changeImageMessage: "Cập nhật avatar thành công"
+            });
+          }
+      })
+      .catch((error) => {
+          _this.setState({
+              is_loading: false
+          });
+          Alert.alert(
+            "Lỗi",
+            "Lỗi phát sinh trong quá trình truyền tải. Vui lòng thử lại!",
+            [
+              {text: 'OK', onPress: () => console.log('OK Pressed')},
+            ]
+          );
+          console.log(error);
+      });
+
+    }
+  }
+
+  _updateCover() {
+    let _this = this;
+
+    if(this.state.coverSourceBase64 == '') {
+      _this.setState({
+        changeImageMessage: 'Vui lòng chọn hình ảnh tải lên'
+      });
+    } else {
+      _this.setState({
+        is_loading: true
+      });
+      // ...
+      fetch('http://210.211.118.178/PetsAPI/api/userauthinfos/'+userId+'/updatecover', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Auth-Token': authToken
+        },
+        body: JSON.stringify({
+          "coverThumbNailInBase64": this.state.coverSourceBase64
+        })
+      })
+      .then((response) => response.json())
+      .then((responseJson) => {
+          // Store the results in the state variable results and set loading to
+          console.log(responseJson);
+
+          if(responseJson.errorCode) {
+            console.log("Code: "+ responseJson.errorMsg);
+            _this.setState({
+              is_loading: false
+            });
+            Alert.alert(
+              "Thông báo",
+              responseJson.errorMsg,
+              [
+                {text: 'Quay lại', onPress: () => console.log('Quay lại pressed'), style: 'cancel'}
+              ]
+            );            
+          } else {
+            _this.setState({
+              data: responseJson,
+              is_loading: false,
+              changeImageMessage: "Cập nhật ảnh bìa thành công"
+            });
+          }
+      })
+      .catch((error) => {
+          _this.setState({
+              is_loading: false
+          });
+          Alert.alert(
+            "Lỗi",
+            "Lỗi phát sinh trong quá trình truyền tải. Vui lòng thử lại!",
+            [
+              {text: 'OK', onPress: () => console.log('OK Pressed')},
+            ]
+          );
+          console.log(error);
+      });
+
+    }
+  }
+
+  _updatePicture() {
+    if(this.state.avatarSourceBase64 != '' && this.state.coverSourceBase64 != '') {
+      this._updateAvatar();
+      this._updateCover();
+    } else if(this.state.avatarSourceBase64 != '') {
+      this._updateAvatar();
+    } else if(this.state.coverSourceBase64 != '') {
+      this._updateCover();
+    } else {
+      this.setState({
+        changeImageMessage: 'Vui lòng chọn ảnh cần thay đổi'
+      });
+    }
   }
 
   render() {
@@ -185,21 +423,25 @@ class Profile extends Component {
           
           <View style={styles.top}>
             {
-            	this.state.coverSource ? (
-            		<Image 
+            	this.state.user ? (
+                <Image 
             			style={{width: ScreenWidth, minHeight: 150}}
-              			source={this.state.coverSource}>
+              		source={this.state.coverOption} >
 
               			<ListItem style={{borderBottomWidth: 0, padding: 30}}>
 			                {
-			                	this.state.avatarSource ? (
-			                		<Thumbnail source={this.state.avatarSource} style={{width: 100, height: 100, borderRadius: 100, marginLeft: 10}}/>
+			                	this.state.avatarThumbnail ? (
+			                		this.state.avatarSource ? (
+                            <Thumbnail source={this.state.avatarSource} style={{width: 80, height: 80, maxWidth: 80, maxHeight: 80, borderRadius: 100, marginLeft: 10}}/>
+                          ) : (
+                            <Thumbnail source={{uri : userAlbum + this.state.avatarThumbnail}} style={{width: 80, height: 80, borderRadius: 100, marginLeft: 10}}/>
+                          )
 			                	) : (
-			                		<Thumbnail source={require('../../../images/avatar.png')} style={{width: 100, height: 100, borderRadius: 100, marginLeft: 10}}/>
+			                		<Thumbnail source={require('../../../images/avatar.png')} style={{width: 80, height: 80, borderRadius: 100, marginLeft: 10}}/>
 			                	)
 			                }
-			                <Text style={{height: 40}}><H1>PHẠM NGỌC LINH</H1></Text>
-			                <Text note numberOfLines={5} style={{height: 40}}><H3 style={{color: '#05a5d1'}}>Email: pnlinh93@gmail.com</H3></Text>
+			                <Text style={{height: 40}}><H1>{this.state.username}</H1></Text>
+			                <Text note numberOfLines={5} style={{height: 40}}><H3 style={{color: '#05a5d1'}}>Email: {this.state.email}</H3></Text>
 			                <Button transparent style={{
 			                	position: 'absolute',
 			                	right: 0,
@@ -218,9 +460,9 @@ class Profile extends Component {
 		              	<ListItem style={{borderBottomWidth: 0, padding: 30}}>
 			                {
 			                	this.state.avatarSource ? (
-			                		<Thumbnail source={this.state.avatarSource} style={{width: 100, height: 100, borderRadius: 100, marginLeft: 10}}/>
+			                		<Thumbnail source={this.state.avatarSource} style={{width: 80, height: 80, maxWidth: 80, maxHeight: 80, borderRadius: 100, marginLeft: 10}}/>
 			                	) : (
-			                		<Thumbnail source={require('../../../images/avatar.png')} style={{width: 100, height: 100, borderRadius: 100, marginLeft: 10}}/>
+			                		<Thumbnail source={require('../../../images/avatar.png')} style={{width: 80, height: 80, maxWidth: 80, maxHeight: 80, borderRadius: 100, marginLeft: 10}}/>
 			                	)
 			                }
 			                <Text style={{height: 40}}><H1>PHẠM NGỌC LINH</H1></Text>
@@ -277,7 +519,7 @@ class Profile extends Component {
                                 </ListItem>
                               </List>
 
-                              <Button rounded bordered block style={{maxWidth: 200, alignSelf: 'center', width: 200, marginTop: 20, marginBottom: 20}}> Cập nhật </Button>
+                              <Button rounded bordered block style={{maxWidth: 150, alignSelf: 'center', width: 150, marginTop: 20, marginBottom: 20}}> Cập nhật </Button>
                           </CardItem>
 
                           <CardItem header>                        
@@ -304,10 +546,10 @@ class Profile extends Component {
                               </List>
                               <List style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                                   <ListItem style={{borderBottomWidth: 0}}>
-                                    <Button rounded danger bordered block style={{maxWidth: 200, alignSelf: 'center', width: 200, marginTop: 20, marginBottom: 20}}> Lấy mã OTP </Button>
+                                    <Button rounded danger bordered block style={{maxWidth: 150, alignSelf: 'center', width: 150, marginTop: 20, marginBottom: 20}}> Lấy mã OTP </Button>
                                   </ListItem>
                                   <ListItem style={{borderBottomWidth: 0}}>
-                                    <Button rounded bordered block style={{maxWidth: 200, alignSelf: 'center', width: 200, marginTop: 20, marginBottom: 20}}> Cập nhật </Button>
+                                    <Button rounded bordered block style={{maxWidth: 150, alignSelf: 'center', width: 150, marginTop: 20, marginBottom: 20}}> Cập nhật </Button>
                                   </ListItem>
                               </List>
                           </CardItem>
@@ -339,8 +581,19 @@ class Profile extends Component {
                                   <Radio selected={true} />
                                   <Text>Thay đổi ảnh bìa (Cover)</Text>
                               </ListItem>
-
-                              <Button rounded bordered block style={{maxWidth: 200, alignSelf: 'center', width: 200, marginTop: 20, marginBottom: 20}}> Cập nhật </Button>
+                              <View>
+                                  {
+                                    this.state.changeImageMessage ? 
+                                    <Text style={{ color: template.danger, alignSelf: 'center', marginTop: 10 }}>{this.state.changeImageMessage}</Text>
+                                     : null
+                                  }
+                              </View>
+                              <Button 
+                                onPress = {() => this._updatePicture()}
+                                rounded bordered block 
+                                style={{maxWidth: 150, alignSelf: 'center', width: 150, marginTop: 20, marginBottom: 20}}>
+                                 Cập nhật 
+                              </Button>
                           </CardItem>
                      </Card>
 

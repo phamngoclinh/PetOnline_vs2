@@ -44,6 +44,7 @@ module.exports = StyleSheet.create({
     borderRadius: 0,
     borderTopColor: '#efefef',
     borderLeftWidth: 0,
+    borderRightWidth: 0,
     backgroundColor: '#f5f5f5'
   }
 });

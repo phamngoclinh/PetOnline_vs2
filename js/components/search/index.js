@@ -69,7 +69,7 @@ class Search extends Component {
             <Icon name="ios-arrow-back" />
           </Button>
 
-          <Title>{(name) ? this.props.name : 'Search'}</Title>
+          <Title>{(name) ? this.props.name : 'Tìm kiếm'}</Title>
 
           <Button transparent onPress={this.props.openDrawer}>
             <Icon name="ios-menu" />
