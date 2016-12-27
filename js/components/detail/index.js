@@ -1,17 +1,19 @@
 
 import React, { Component } from 'react';
-import { Image, AsyncStorage } from 'react-native';
+import { Image, AsyncStorage, Linking } from 'react-native';
 import { connect } from 'react-redux';
 import { actions } from 'react-native-navigation-redux-helpers';
-import { Container, Header, Title, Content, Text, Button, Icon, Card, CardItem, Thumbnail, Fab, Spinner } from 'native-base';
+import { Container, Header, Title, Content, Text, Button, Icon, Card, CardItem, Thumbnail, Fab, Spinner, InputGroup, Input } from 'native-base';
 
 import { openDrawer } from '../../actions/drawer';
+import { setIndex } from '../../actions/list';
 import styles from './styles';
 
 import GLOBAL from '../../storage/global';
 
 const {
   popRoute,
+  pushRoute,
 } = actions;
 
 const apiLink = 'http://210.211.118.178/PetsAPI/';
@@ -28,7 +30,9 @@ class Detail extends Component {
     index: React.PropTypes.number,
     list: React.PropTypes.arrayOf(React.PropTypes.string),
     openDrawer: React.PropTypes.func,
+    setIndex: React.PropTypes.func,
     popRoute: React.PropTypes.func,
+    pushRoute: React.PropTypes.func,
     navigation: React.PropTypes.shape({
       key: React.PropTypes.string,
     }),
@@ -36,6 +40,11 @@ class Detail extends Component {
 
   popRoute() {
     this.props.popRoute(this.props.navigation.key);
+  }
+
+  pushRoute(route, index) {
+    this.props.setIndex(index);
+    this.props.pushRoute({ key: route, index: 1 }, this.props.navigation.key);
   }
 
   constructor(props) {
@@ -46,7 +55,8 @@ class Detail extends Component {
           authToken: '',
           detailId: '',
           data : null,
-          is_search: false
+          is_search: false,
+          search: ''
       };
   }
 
@@ -143,6 +153,13 @@ class Detail extends Component {
     });
   }
 
+  search() {
+      // Set loading to true when the search starts to display a Spinner
+      AsyncStorage.setItem('SEARCH_TEXT', this.state.search);
+
+      this.pushRoute('search', 3);
+  }
+
   render() {
     const { props: { name, index, list } } = this;
 
@@ -188,11 +205,11 @@ class Detail extends Component {
               <Card style={{ flex: 0, marginTop: 10, borderWidth: .5, borderColor: '#FFFAFA' }}>
                   <CardItem style={{backgroundColor: '#FFFFFA', borderBottomWidth: 0}}>
                       {
-                        /*this.state.data.Pet.User.avatarThumbnail ? <Thumbnail source={{uri : userAlbum + this.state.data.Pet.User.avatarThumbnail}} /> : null*/
+                        this.state.data.Pet.User.avatarThumbnail ? <Thumbnail source={{uri : userAlbum + this.state.data.Pet.User.avatarThumbnail}} /> : null
                       }
                       <Text style={{fontSize: 17}}>{this.state.data.title}</Text>
                       {
-                        /*<Text note>{this.state.data.Pet.User.firstName ? 'Linh' : 'Linh'} {this.state.data.Pet.User.lastName ? 'Linh' : 'Linh'}</Text>*/
+                        <Text note>{this.state.data.Pet.User.firstName ? this.state.data.Pet.User.firstName : 'Anonymous'} {this.state.data.Pet.User.lastName ? this.state.data.Pet.User.lastName : 'User'}</Text>
                       }
                   </CardItem>
 
@@ -214,18 +231,23 @@ class Detail extends Component {
                           <Icon name="ios-pricetags-outline" />
                           Chó
                       </Button>
-                      <Button>
-                          <Icon name="ios-phone-portrait-outline" />
-                          GỌI NGAY
-                      </Button>
-
-                      {
-                        /*
-                        <Button onPress={() => {this.callMobile(members.Pet.User.phone)}}>
+                      
+                      <Button onPress={() => {this.callMobile(this.state.data.Pet.User.phone)}}>
                             <Icon name="ios-phone-portrait-outline" />
                             GỌI NGAY
                         </Button>
+
+                      
+
+                      {
+                        
+                        /*
+                        <Button>
+                          <Icon name="ios-phone-portrait-outline" />
+                          GỌI NGAY
+                      </Button>
                         */
+                        
                       }
                   </CardItem>
 
@@ -245,6 +267,8 @@ function bindAction(dispatch) {
   return {
     openDrawer: () => dispatch(openDrawer()),
     popRoute: key => dispatch(popRoute(key)),
+    setIndex: index => dispatch(setIndex(index)),
+    pushRoute: (route, key) => dispatch(pushRoute(route, key)),
   };
 }
 

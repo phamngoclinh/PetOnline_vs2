@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import { Image } from 'react-native';
+import { Image, AsyncStorage } from 'react-native';
 import { connect } from 'react-redux';
 import { actions } from 'react-native-navigation-redux-helpers';
 import { Container, Header, Title, Content, Text, Button, Icon, Grid, Col, InputGroup, Input } from 'native-base';
@@ -36,7 +36,8 @@ class Category extends Component {
   constructor(props) {
       super(props);
       this.state = {
-          is_search: false
+          is_search: false,
+          search: '',
       };
 
       this.search = this.search.bind(this);
@@ -44,13 +45,10 @@ class Category extends Component {
 
 
   search() {
-    // Set loading to true when the search starts to display a Spinner
-    this.setState({
-        loading: true,
-        is_loading_data: true
-    });
-    this.pushRoute('search', 1);
-    var that = this;
+      // Set loading to true when the search starts to display a Spinner
+      AsyncStorage.setItem('SEARCH_TEXT', this.state.search);
+
+      this.pushRoute('search', 3);
   }
 
   popRoute() {

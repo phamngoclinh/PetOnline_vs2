@@ -66,7 +66,8 @@ class CreateArticle extends Component {
           is_loading: false,
           authenticateToken: '',
           createArticleMessage: '',
-          is_search: false
+          is_search: false,
+          search: ''
       };
   }
 
@@ -235,6 +236,13 @@ class CreateArticle extends Component {
     // }
   };
 
+  search() {
+      // Set loading to true when the search starts to display a Spinner
+      AsyncStorage.setItem('SEARCH_TEXT', this.state.search);
+
+      this.pushRoute('search', 3);
+  }
+
   render() {
     const { props: { name, index, list } } = this;
 
@@ -279,7 +287,7 @@ class CreateArticle extends Component {
               source={this.state.avatarSource} />
 
             <Button bordered style={styles.buttonUpload} onPress={() => this.loadImageFromDevice()}>
-              {this.state.avatarSource ? 'Change image' : 'Upload Image'}
+              {this.state.avatarSource ? 'Thay đổi hình ảnh' : 'Chọn ảnh tải lên'}
             </Button>
 
           </View>
@@ -287,32 +295,32 @@ class CreateArticle extends Component {
           <View>
             <InputGroup iconRight style={styles.myInput}>
                 <Icon name='ios-swap' style={{color:'#00C497'}}/>
-                <Input placeholder="Enter Title" 
+                <Input placeholder="Tiêu đề" 
                 onChangeText={articleTitle => this.setState({ articleTitle })} />
             </InputGroup>
 
             <InputGroup iconRight style={styles.myInput}>
                 <Icon name='ios-swap' style={{color:'#00C497'}}/>
-                <Input placeholder="Enter Description"
+                <Input placeholder="Mô tả"
                   onChangeText={articleDescription => this.setState({ articleDescription })} />
             </InputGroup>
 
             <InputGroup iconRight style={styles.myInput}>
                 <Icon name='ios-swap' style={{color:'#00C497'}}/>
-                <Input placeholder="Enter Content"
+                <Input placeholder="Nội dung chính"
                   onChangeText={articleContent => this.setState({ articleContent })} />
             </InputGroup>
 
             <InputGroup iconRight style={styles.myInput}>
                 <Icon name='ios-swap' style={{color:'#00C497'}}/>
-                <Input placeholder="New price"
+                <Input placeholder="Giá"
                   onChangeText={articleBasePrice => this.setState({ articleBasePrice })} />
             </InputGroup>
 
             {this.state.createArticleMessage ? <Text style={{ color: template.danger, alignSelf: 'center', marginTop: 15 }}>{this.state.createArticleMessage}</Text> : null}
             {this.state.is_loading ? <Spinner color='blue' visible={this.state.is_loading} /> : null}
 
-            <Button large style={styles.createArticle} onPress={() => this.createArticle()}>CREATE ARTICLE</Button>
+            <Button large style={styles.createArticle} onPress={() => this.createArticle()}>TẠO BÀI VIẾT</Button>
           </View>
         </Content>
       </Container>

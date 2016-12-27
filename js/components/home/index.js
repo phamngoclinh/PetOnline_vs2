@@ -157,12 +157,9 @@ class Home extends Component {
 
   search() {
       // Set loading to true when the search starts to display a Spinner
-      this.setState({
-          loading: true,
-          is_loading_data: true
-      });
+      AsyncStorage.setItem('SEARCH_TEXT', this.state.search);
+
       this.pushRoute('search', 3);
-      var that = this;
   }
 
   setModalVisible(visible) {
@@ -278,7 +275,7 @@ class Home extends Component {
                       <CardItem style={{backgroundColor: '#fdfdfd', borderTopWidth: 0, flexDirection: 'row', justifyContent: 'space-between', borderBottomColor: '#f9f9f9'}}>
                         <Button transparent>
 	                        <Icon name='ios-calendar-outline' />
-	                        <Text note>Ngày đăng: {members.createdOn}</Text>
+	                        <Text note>Ngày đăng: {members.createdOn.slice(0, 10)}</Text>
 	                    </Button>
 	                    <Button transparent>
 	                        <Icon name='ios-eye-outline' />
@@ -286,7 +283,7 @@ class Home extends Component {
 	                    </Button>
 	                    <Button transparent>
 	                        <Icon name='ios-camera-outline' />
-	                        <Text note>Hình ảnh: {members.view}</Text>
+	                        <Text note>Ảnh: {members.view}</Text>
 	                    </Button>
                       </CardItem>
 

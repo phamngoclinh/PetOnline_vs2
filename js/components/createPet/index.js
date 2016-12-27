@@ -65,7 +65,8 @@ class CreatePet extends Component {
           is_loading: false,
           authenticateToken: '',
           createPetMessage: '',
-          is_search: false
+          is_search: false,
+          search: ''
       };
   }
 
@@ -234,6 +235,13 @@ class CreatePet extends Component {
     // }
   };
 
+  search() {
+      // Set loading to true when the search starts to display a Spinner
+      AsyncStorage.setItem('SEARCH_TEXT', this.state.search);
+
+      this.pushRoute('search', 3);
+  }
+
   render() {
     const { props: { name, index, list } } = this;
 
@@ -278,7 +286,7 @@ class CreatePet extends Component {
               source={this.state.avatarSource} />
 
             <Button bordered style={styles.buttonUpload} onPress={() => this.loadImageFromDevice()}>
-              {this.state.avatarSource ? 'Change image' : 'Upload Image'}
+              {this.state.avatarSource ? 'Thay đổi hình ảnh' : 'Chọn ảnh tải lên'}
             </Button>
 
           </View>
@@ -286,32 +294,32 @@ class CreatePet extends Component {
           <View>
             <InputGroup iconRight style={styles.myInput}>
                 <Icon name='ios-swap' style={{color:'#00C497'}}/>
-                <Input placeholder="Enter your pet's name" 
+                <Input placeholder="Tên thú cưng" 
                 onChangeText={petName => this.setState({ petName })} />
             </InputGroup>
 
             <InputGroup iconRight style={styles.myInput}>
                 <Icon name='ios-swap' style={{color:'#00C497'}}/>
-                <Input placeholder="Enter your pet's birthday"
+                <Input placeholder="Ngày sinh"
                   onChangeText={petDate => this.setState({ petDate })} />
             </InputGroup>
 
             <InputGroup iconRight style={styles.myInput}>
                 <Icon name='ios-swap' style={{color:'#00C497'}}/>
-                <Input placeholder="Enter price"
+                <Input placeholder="Giá"
                   onChangeText={petPrice => this.setState({ petPrice })} />
             </InputGroup>
 
             <InputGroup iconRight style={styles.myInput}>
                 <Icon name='ios-swap' style={{color:'#00C497'}}/>
-                <Input placeholder="Other information"
+                <Input placeholder="Thông tin khác"
                   onChangeText={petOther => this.setState({ petOther })} />
             </InputGroup>
 
             {this.state.createPetMessage ? <Text style={{ color: template.danger, alignSelf: 'center', marginTop: 15 }}>{this.state.createPetMessage}</Text> : null}
             {this.state.is_loading ? <Spinner color='blue' visible={this.state.is_loading} /> : null}
 
-            <Button large style={styles.createPet} onPress={() => this.createPet()}>CREATE PET</Button>
+            <Button large style={styles.createPet} onPress={() => this.createPet()}>TẠO THÚ CƯNG</Button>
           </View>
         </Content>
       </Container>

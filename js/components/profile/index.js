@@ -6,11 +6,13 @@ import { actions } from 'react-native-navigation-redux-helpers';
 import { Container, Header, Title, Content, H1, H3, Text, Button, Radio, Tabs, Icon, Thumbnail, List, ListItem, InputGroup, Input, Card, CardItem, Grid, Col } from 'native-base';
 
 import { openDrawer } from '../../actions/drawer';
+import { setIndex } from '../../actions/list';
 import template from '../../themes/style-template';
 import styles from './styles';
 
 const {
   popRoute,
+  pushRoute,
 } = actions;
 
 const apiLink = 'http://210.211.118.178/PetsAPI/';
@@ -49,6 +51,8 @@ class Profile extends Component {
     list: React.PropTypes.arrayOf(React.PropTypes.string),
     openDrawer: React.PropTypes.func,
     popRoute: React.PropTypes.func,
+    setIndex: React.PropTypes.func,
+    pushRoute: React.PropTypes.func,
     navigation: React.PropTypes.shape({
       key: React.PropTypes.string,
     }),
@@ -56,6 +60,11 @@ class Profile extends Component {
 
   popRoute() {
     this.props.popRoute(this.props.navigation.key);
+  }
+
+  pushRoute(route, index) {
+    this.props.setIndex(index);
+    this.props.pushRoute({ key: route, index: 1 }, this.props.navigation.key);
   }
 
   constructor(props) {
@@ -67,6 +76,7 @@ class Profile extends Component {
           coverSource: null,
           coverSourceBase64: '',
           is_search: false,
+          search: '',
 
           data : null,
           is_loading: false,
@@ -459,6 +469,13 @@ class Profile extends Component {
     }
   }
 
+  search() {
+      // Set loading to true when the search starts to display a Spinner
+      AsyncStorage.setItem('SEARCH_TEXT', this.state.search);
+
+      this.pushRoute('search', 3);
+  }
+
   render() {
     const { props: { name, index, list } } = this;
 
@@ -716,6 +733,8 @@ function bindAction(dispatch) {
   return {
     openDrawer: () => dispatch(openDrawer()),
     popRoute: key => dispatch(popRoute(key)),
+    setIndex: index => dispatch(setIndex(index)),
+    pushRoute: (route, key) => dispatch(pushRoute(route, key)),
   };
 }
 
