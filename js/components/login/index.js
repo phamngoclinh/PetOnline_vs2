@@ -15,6 +15,13 @@ const {
   replaceAt,
 } = actions;
 
+import feathers from 'feathers/client'
+import hooks from 'feathers-hooks';
+import socketio from 'feathers-socketio/client'
+import authentication from 'feathers-authentication/client';
+var io = require('../../packages/socket.io-client/socket.io');
+const PLACEHOLDER = '../../../images/avatarThumbnail.png';
+
 const background = require('../../../images/loading.jpg');
 
 class Login extends Component {
@@ -48,8 +55,20 @@ class Login extends Component {
       authToken: '',
       getOptMessage: '',
       confirmOtpMessage: '',
-      loginMessage: ''
+      loginMessage: '',
+      connectSocket : false
     };
+
+    const options = {transports: ['websocket'], forceNew: true};
+    const socket = io('192.168.56.1:3030', options);
+
+    this.featherAPI = feathers()
+        .configure(socketio(socket))
+        .configure(hooks())
+        // Use AsyncStorage to store our login toke
+        .configure(authentication({
+            storage: AsyncStorage
+        }));
   }
 
   componentDidMount() {
@@ -59,6 +78,10 @@ class Login extends Component {
 
     _this._loadInitialState();
 
+    _this.featherAPI.io.on('connect', () => {
+        console.log("Connect to Socket success");
+        _this.setState({connectSocket : true});
+    });
 
     _this.setState({
       is_loading: false
@@ -85,12 +108,11 @@ class Login extends Component {
     }
   };
 
-  _authenticate = async (token) => {
-    // alert(token);
+  _authenticate (token) {
     try {
-      await AsyncStorage.setItem('AUTH_TOKEN', token)
-    } catch (error) {
-      //
+      AsyncStorage.setItem('AUTH_TOKEN', token);
+    } catch(error) {
+      console.log(error);
     }
   };
 
@@ -156,14 +178,11 @@ class Login extends Component {
               is_loading: false
             });
 
-            // console.log("UserId: ", responseJson.userAuthInfoId);
-
-            _this._saveUserId(responseJson.userAuthInfoId.toString());
             _this._authenticate(responseJson.authToken);
-
-            // alert("Authenticate successfully: " + AsyncStorage.getItem(AUTH_TOKEN));
-
+            _this._saveUserId(responseJson.userAuthInfoId.toString());
             _this.replaceRoute('home');
+
+            // console.log("UserId: ", responseJson.userAuthInfoId);
           }
       })
       .catch((error) => {

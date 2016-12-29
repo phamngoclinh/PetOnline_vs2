@@ -16,6 +16,13 @@ const {
   replaceAt,
 } = actions;
 
+import feathers from 'feathers/client'
+import hooks from 'feathers-hooks';
+import socketio from 'feathers-socketio/client'
+import authentication from 'feathers-authentication/client';
+var io = require('../../packages/socket.io-client/socket.io');
+const PLACEHOLDER = '../../../images/avatarThumbnail.png';
+
 const background = require('../../../images/background.jpg');
 
 class Signup extends Component {
@@ -49,6 +56,18 @@ class Signup extends Component {
       data : null,
       registerMessage: ''
     };
+
+
+    const options = {transports: ['websocket'], forceNew: true};
+    const socket = io('192.168.56.1:3030', options);
+
+    this.featherAPI = feathers()
+        .configure(socketio(socket))
+        .configure(hooks())
+        // Use AsyncStorage to store our login toke
+        .configure(authentication({
+            storage: AsyncStorage
+        }));
   }
 
   componentDidMount() {
@@ -120,6 +139,17 @@ class Signup extends Component {
             _this.setState({
               data: responseJson,
               is_loading: false
+            });
+
+            _this.featherAPI.service('users').create({
+              email: this.state.email,
+              password: this.state.password
+            }).then((result) => {
+              if(result.length > 0) {
+                console.log("Tạo tài khoản thành công. ", result);
+              }
+            }).catch((error) => {
+              console.log("Lỗi. Không thể tạo tài khoản Chát. ", error);
             });
 
             _this._saveUserInfo(responseJson);

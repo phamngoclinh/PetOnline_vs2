@@ -248,7 +248,7 @@ class Home extends Component {
               this.state.data.map((members, index) => {
                 return (
                   <Card key={members.id} style={{ flex: 0, marginBottom: 10, borderWidth: .5, borderColor: '#FFFAFA'}}>
-                      <CardItem style={{backgroundColor: '#FFFFFA', borderBottomWidth: 0}}>
+                      <CardItem style={{backgroundColor: '#fdfdfd', borderBottomWidth: 0}}>
                           <Thumbnail source={{uri : userAlbum + members.Pet.User.avatarThumbnail}} />
                           <Text onPress={() => this.viewDetail(members.id)} style={{fontSize: 17}}>{members.title}</Text>
                           <Text note>{members.Pet.User.firstName} {members.Pet.User.lastName}</Text>

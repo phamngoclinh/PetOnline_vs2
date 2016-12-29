@@ -253,6 +253,12 @@ class SideBar extends Component {
                   </ListItem>
                   */
                 }
+
+                <ListItem button iconLeft onPress={() => this.navigateTo('blankPage')} style={{marginTop: 10, marginBottom: 10, borderBottomColor: '#f3f3f3', paddingBottom: 20}}>
+                    <Icon name="ios-people-outline" style={{ color: '#0A69FE', fontSize: 26, marginRight: 15 }} />
+                    <Text style={{fontSize: 19, color: '#384850'}}>PHÒNG TÁN GẪU</Text>
+                </ListItem>
+
                 <ListItem button iconLeft onPress={() => this.logout()} style={{marginTop: 10, marginBottom: 10, borderBottomColor: '#f3f3f3', paddingBottom: 20}}>
                     <Icon name="ios-log-out-outline" style={{ color: '#0A69FE', fontSize: 26, marginRight: 15 }} />
                     <Text style={{fontSize: 19, color: '#384850'}}>ĐĂNG XUẤT</Text>
