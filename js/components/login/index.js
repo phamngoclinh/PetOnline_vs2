@@ -7,20 +7,22 @@ import { Container, Content, InputGroup, Input, Button, Icon, View, Text, Spinne
 
 import { setUser } from '../../actions/user';
 import template from '../../themes/style-template';
+import { setIndex } from '../../actions/list';
 import styles from './styles';
 
 import GLOBAL from '../../storage/global';
 
 const {
   replaceAt,
+  pushRoute,
 } = actions;
 
-import feathers from 'feathers/client'
-import hooks from 'feathers-hooks';
-import socketio from 'feathers-socketio/client'
-import authentication from 'feathers-authentication/client';
-var io = require('../../packages/socket.io-client/socket.io');
-const PLACEHOLDER = '../../../images/avatarThumbnail.png';
+// import feathers from 'feathers/client'
+// import hooks from 'feathers-hooks';
+// import socketio from 'feathers-socketio/client'
+// import authentication from 'feathers-authentication/client';
+// var io = require('../../packages/socket.io-client/socket.io');
+// const PLACEHOLDER = '../../../images/avatarThumbnail.png';
 
 const background = require('../../../images/loading.jpg');
 
@@ -29,6 +31,8 @@ class Login extends Component {
   static propTypes = {
     setUser: React.PropTypes.func,
     replaceAt: React.PropTypes.func,
+    pushRoute: React.PropTypes.func,
+    setIndex: React.PropTypes.func,
     navigation: React.PropTypes.shape({
       key: React.PropTypes.string,
     }),
@@ -59,16 +63,16 @@ class Login extends Component {
       connectSocket : false
     };
 
-    const options = {transports: ['websocket'], forceNew: true};
-    const socket = io('192.168.43.165:3030', options);
+    // const options = {transports: ['websocket'], forceNew: true};
+    // const socket = io('http://192.168.43.165:3030', options);
 
-    this.featherAPI = feathers()
-        .configure(socketio(socket))
-        .configure(hooks())
-        // Use AsyncStorage to store our login toke
-        .configure(authentication({
-            storage: AsyncStorage
-        }));
+    // this.featherAPI = feathers()
+    //     .configure(socketio(socket, {timeout: 50000}))
+    //     .configure(hooks())
+    //     // Use AsyncStorage to store our login toke
+    //     .configure(authentication({
+    //         storage: AsyncStorage
+    //     }));
   }
 
   componentDidMount() {
@@ -78,10 +82,10 @@ class Login extends Component {
 
     _this._loadInitialState();
 
-    _this.featherAPI.io.on('connect', () => {
-        console.log("Connect to Socket success");
-        _this.setState({connectSocket : true});
-    });
+    // _this.featherAPI.io.on('connect', () => {
+    //     console.log("Connect to Socket success");
+    //     _this.setState({connectSocket : true});
+    // });
 
     _this.setState({
       is_loading: false
@@ -90,11 +94,19 @@ class Login extends Component {
     // _this._getUserId();
   }
 
+  pushRoute(route, index) {
+    this.props.setIndex(index);
+    this.props.pushRoute({ key: route, index: 1 }, this.props.navigation.key);
+  }
+
+
+
   _loadInitialState = async () => {
     try {
       var authToken = await AsyncStorage.getItem('AUTH_TOKEN');
       if (authToken !== null){
-        this.replaceRoute('home');
+        // this.replaceRoute('home');
+        this.pushRoute('home', 2);
         // alert("Check authToken is exist. authToken = " + authToken);
       } else {
         try {
@@ -180,7 +192,8 @@ class Login extends Component {
 
             _this._authenticate(responseJson.authToken);
             _this._saveUserId(responseJson.userAuthInfoId.toString());
-            _this.replaceRoute('home');
+            // _this.replaceRoute('home');
+            _this.pushRoute('home', 2);
 
             // console.log("UserId: ", responseJson.userAuthInfoId);
           }
@@ -433,7 +446,7 @@ class Login extends Component {
                               {this.state.is_submit_forget ? <Spinner color='blue' visible={this.state.is_submit_forget} /> : null}
                               {this.state.getOptMessage ? <Text style={{ color: template.warning }}>{this.state.getOptMessage}</Text> : null}
                               <InputGroup borderType='underline' style={{marginTop: 30}}>
-                                  <Icon name='ios-mail' style={{color:'#384850', marginTop: -5, marginRight: 15}}/>
+                                  <Icon name='ios-mail-outline' style={{color:'#384850', marginTop: -5, marginRight: 15}}/>
                                   <Input
                                     placeholder='Nhập email hoặc số điện thoại'
                                     onChangeText={emailForget => this.setState({ emailForget })} />
@@ -508,6 +521,8 @@ class Login extends Component {
 function bindActions(dispatch) {
   return {
     replaceAt: (routeKey, route, key) => dispatch(replaceAt(routeKey, route, key)),
+    pushRoute: (route, key) => dispatch(pushRoute(route, key)),
+    setIndex: index => dispatch(setIndex(index)),
     setUser: name => dispatch(setUser(name)),
   };
 }

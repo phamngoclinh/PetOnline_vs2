@@ -10,6 +10,7 @@ import styles from './styles';
 
 const {
   popRoute,
+  replaceAt,
 } = actions;
 
 var searchText = 'pet';
@@ -27,6 +28,7 @@ class Search extends Component {
     list: React.PropTypes.arrayOf(React.PropTypes.string),
     openDrawer: React.PropTypes.func,
     popRoute: React.PropTypes.func,
+    replaceAt: React.PropTypes.func,
     navigation: React.PropTypes.shape({
       key: React.PropTypes.string,
     }),
@@ -100,6 +102,52 @@ class Search extends Component {
     //     console.error(error);
     // });
   }
+
+  replaceRoute(route) {
+    // this.setUser(this.state.name);
+    this.props.replaceAt('search', { key: route }, this.props.navigation.key);
+  }
+
+  viewDetail(id) {
+    let _this = this;
+    _this._saveDetailId(id);
+    AsyncStorage.getItem('VIEW_ARTICLE_ID').then( (value) => {
+      fetch('http://210.211.118.178/PetsAPI/api/articles/'+value+'/updateview', {
+          method: 'PUT',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Auth-Token': authToken
+          }
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+            // Store the results in the state variable results and set loading to
+            // _this.setState({
+            //   data: responseJson,
+            //   is_loading_data: false
+            // });
+          console.log('PUT success');
+
+          // this.pushRoute('detail', 2);
+          _this.replaceRoute('detail');
+        })
+        .catch((error) => {
+           //  _this.setState({
+           //    loading: false
+            // });
+            console.error(error);
+        });
+    });
+  }
+
+  _saveDetailId(id) {
+    try {
+      AsyncStorage.setItem('VIEW_ARTICLE_ID', id.toString());
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   search() {
       var _this = this;
@@ -185,11 +233,11 @@ class Search extends Component {
             {this.state.loading ? <Spinner color='blue' visible={this.state.loading} /> : null}
 
            <List style={{paddingLeft: 0, marginLeft: 0}} dataArray={this.state.results} renderRow={(item) =>
-                <ListItem style={{paddingLeft: 0, marginLeft: 0}} button onPress={()=>this.setModalVisible(true, item)}>
-                    <Thumbnail square size={80} source={{uri: petAlbum + item.Pet.Image.thumbnail}} />
+                <ListItem style={{paddingLeft: 0, marginLeft: 0}} button onPress={() => this.viewDetail(item.id)}>
+                    <Thumbnail square size={80} source={{uri: petAlbum + item.Pet.Image.thumbnail}}/>
                     <Text style={{fontWeight: '600', color: '#007594'}}>{item.title}</Text>
-                    <Text style={{color:'#2a2f3a'}}>{item.description}</Text>
-                    <Text note>Price: <Text note style={{marginTop: 5}}>{item.price}</Text></Text>
+                    <Text numberOfLines={3} style={{color:'#2a2f3a'}}>{item.description}</Text>
+                    <Text note>Giá: <Text note style={{marginTop: 5}}>{item.price}</Text></Text>
                 </ListItem>
             } />
         </Content>
@@ -202,6 +250,7 @@ function bindAction(dispatch) {
   return {
     openDrawer: () => dispatch(openDrawer()),
     popRoute: key => dispatch(popRoute(key)),
+    replaceAt: (routeKey, route, key) => dispatch(replaceAt(routeKey, route, key)),
   };
 }
 

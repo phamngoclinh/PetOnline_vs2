@@ -640,8 +640,8 @@ class Profile extends Component {
 			                		<Thumbnail source={require('../../../images/avatar.png')} style={{width: 80, height: 80, borderRadius: 100, marginLeft: 10}}/>
 			                	)
 			                }
-			                <Text style={{height: 40}}><H1>{this.state.username}</H1></Text>
-			                <Text note numberOfLines={5} style={{height: 40}}><H3 style={{color: '#05a5d1'}}>Email: {this.state.email}</H3></Text>
+			                <Text style={{height: 40, fontSize: 24, color: '#ffffff'}} numberOfLines={1}><H1>{this.state.username}</H1></Text>
+			                <Text note numberOfLines={1} style={{height: 40}}><H3 style={{color: '#05a5d1'}}>Email: {this.state.email}</H3></Text>
 			                <Button transparent style={{
 			                	position: 'absolute',
 			                	right: 0,
@@ -665,8 +665,8 @@ class Profile extends Component {
 			                		<Thumbnail source={require('../../../images/avatar.png')} style={{width: 80, height: 80, maxWidth: 80, maxHeight: 80, borderRadius: 100, marginLeft: 10}}/>
 			                	)
 			                }
-			                <Text style={{height: 40}}><H1>PHẠM NGỌC LINH</H1></Text>
-			                <Text note numberOfLines={5} style={{height: 40}}><H3 style={{color: '#05a5d1'}}>Email: pnlinh93@gmail.com</H3></Text>
+			                <Text style={{height: 40, fontSize: 24, color: '#ffffff'}} numberOfLines={1}><H1>PHẠM NGỌC LINH</H1></Text>
+			                <Text note numberOfLines={1} style={{height: 40}}><H3 style={{color: '#05a5d1'}}>Email: pnlinh93@gmail.com</H3></Text>
 			                <Button transparent style={{
 			                	position: 'absolute',
 			                	right: 0,
@@ -827,14 +827,14 @@ class Profile extends Component {
                     <Content tabLabel='DANH MỤC CỦA TÔI' style={{paddingTop: 10}}>
                       <Grid style={{width: ScreenWidth - 40}}>
                           <Col style={{paddingRight: 5}}>
-                            <Button block style={{ backgroundColor: '#D93735', height: 200, marginBottom: 10}}>PET CỦA TÔI</Button>
-                            <Button block style={{ backgroundColor: '#D93735', height: 200, marginBottom: 10}}>BÀI VIẾT CỦA TÔI</Button>
-                            <Button block style={{ backgroundColor: '#D93735', height: 200, marginBottom: 10}}>ĐANG THEO DÕI</Button>
+                            <Button block style={{ backgroundColor: '#0084ff', height: 200, marginBottom: 10}}>PET CỦA TÔI</Button>
+                            <Button block style={{ backgroundColor: '#0084ff', height: 200, marginBottom: 10}}>BÀI VIẾT CỦA TÔI</Button>
+                            <Button block style={{ backgroundColor: '#0084ff', height: 200, marginBottom: 10}}>ĐANG THEO DÕI</Button>
                           </Col>
                           <Col style={{paddingLeft: 5}}>
-                            <Button block style={{ backgroundColor: '#D93735', height: 200, marginBottom: 10}}>BÀI VIẾT GẦN ĐÂY</Button>
-                            <Button block style={{ backgroundColor: '#D93735', height: 200, marginBottom: 10}}>BÀI VIẾT XEM NHIỀU</Button>
-                            <Button block style={{ backgroundColor: '#D93735', height: 200, marginBottom: 10}}>LỊCH SỬ BÁN PET</Button>
+                            <Button block style={{ backgroundColor: '#0084ff', height: 200, marginBottom: 10}}>BÀI VIẾT GẦN ĐÂY</Button>
+                            <Button block style={{ backgroundColor: '#0084ff', height: 200, marginBottom: 10}}>BÀI VIẾT XEM NHIỀU</Button>
+                            <Button block style={{ backgroundColor: '#0084ff', height: 200, marginBottom: 10}}>LỊCH SỬ BÁN PET</Button>
                           </Col>
                       </Grid>
                     </Content>

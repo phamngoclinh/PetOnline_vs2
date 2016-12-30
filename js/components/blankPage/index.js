@@ -19,12 +19,23 @@ import authentication from 'feathers-authentication/client';
 var io = require('../../packages/socket.io-client/socket.io');
 const PLACEHOLDER = '../../../images/avatarThumbnail.png';
 
+const defaultAvatar = require('../../../images/avatarThumbnail.png');
+
 const ScreenHeight = Dimensions.get("window").height;
 const ScreenWidth = Dimensions.get("window").width;
 
 const {
   popRoute,
 } = actions;
+
+const apiLink = 'http://210.211.118.178/PetsAPI/';
+const petAlbum = 'http://210.211.118.178/PetsAPI/Images/PetThumbnails/';
+const userAlbum = 'http://210.211.118.178/PetsAPI/Images/UserThumbnails/';
+var user_Id = '';
+var authToken = '';
+var avatarThumbnail = '';
+var coverThumbnail = '';
+var my_email = '';
 
 class UselessTextInput extends Component {
   render() {
@@ -57,14 +68,19 @@ class BlankPage extends Component {
       messages: [],
       skip: 0,
       hasMoreMessages : false,
-      loading: true
+      loading: true,
+      is_loading_data : false,
+      user : null,
+      username: '',
+      email: '',
+      phone : ''
     };
 
     const options = {transports: ['websocket'], forceNew: true};
-    const socket = io('http://192.168.43.165:3030', options);
+    const socket = io('http://192.168.56.1:3030', options);
 
     this.featherAPI = feathers()
-        .configure(socketio(socket, {timeout: 5000}))
+        .configure(socketio(socket, {timeout: 50000}))
         .configure(hooks())
         // Use AsyncStorage to store our login toke
         .configure(authentication({
@@ -78,6 +94,12 @@ class BlankPage extends Component {
 
   componentDidMount() {
     let _this = this;
+
+    AsyncStorage.getItem('AUTH_TOKEN').then((value) => {
+        authToken = value;
+    });
+
+    _this.getUserInformation();
 
     AsyncStorage.getItem('PETAPP_ID').then((value) => {
       petAppId = value;
@@ -93,27 +115,29 @@ class BlankPage extends Component {
           _this.setState({messages});
         });
 
-        var loginInfo = {
-            type: 'local',
-            email: 'phamngoclinh@gmail.com',
-            password: '123456',
-        };
+        AsyncStorage.getItem('USER_EMAIL').then((value) => {
+          var loginInfo = {
+              type: 'local',
+              email: value,
+              password: '123456',
+          };
 
-        _this.featherAPI.authenticate(loginInfo).then((response) => {
-          console.log(response);
-          console.log('auth ok');
-          AsyncStorage.setItem('PETAPP_ID', response.data._id);
-          petAppId = response.data._id;
+          _this.featherAPI.authenticate(loginInfo).then((response) => {
+            console.log(response);
+            console.log('auth ok');
+            AsyncStorage.setItem('PETAPP_ID', response.data._id);
+            petAppId = response.data._id;
 
-          _this.loadMessages();
+            _this.loadMessages();
 
-          _this.setState({loading: false});
-        }).catch((error) => {
-          console.log(error);
-          console.log('auth fail');
-          _this.setState({loading: false});
-          alert("auth fail");
-        });
+            _this.setState({loading: false});
+          }).catch((error) => {
+            console.log(error);
+            console.log('auth fail');
+            _this.setState({loading: false});
+            alert("auth fail");
+          });
+        })
     });
 
     
@@ -121,6 +145,54 @@ class BlankPage extends Component {
 
   componentWillMount() {
     
+  }
+
+  getUserInformation() {
+    let _this = this;
+    AsyncStorage.getItem('USER_ID').then((value) => {
+      console.log("UserId in sidebar: ", value);
+      // alert("UserId in sidebar: ", value);
+
+      fetch('http://210.211.118.178/PetsAPI/api/userauthinfos/'+value, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Auth-Token': authToken
+        }
+      })
+      .then((response) => response.json())
+      .then((responseJson) => {
+          my_email = responseJson.email,
+          // Store the results in the state variable results and set loading to
+          _this.setState({
+            user: responseJson,
+            username: responseJson.firstName + " " + responseJson.lastName,
+            email: responseJson.email,
+            phone: responseJson.phone,
+            is_loading_data: false
+          });
+
+          avatarThumbnail = responseJson.avatarThumbnail;
+          coverThumbnail = responseJson.coverThumbnail;
+
+          if(avatarThumbnail == null || avatarThumbnail == '') {
+            avatarThumbnail = '../../../images/avatar.png';
+          }
+
+          if(coverThumbnail == null || coverThumbnail == '') {
+            coverThumbnail = '../../../images/avatar.png';
+          }
+
+          console.log("Get USER from server: ", responseJson);
+      })
+      .catch((error) => {
+          _this.setState({
+            loading: false
+        });
+          console.error(error);
+      });
+    });
   }
 
   createMessage() {
@@ -139,11 +211,12 @@ class BlankPage extends Component {
   formatMessage(message) {
     return {
       id: message._id,
-      name: message.sentBy.email,
+      name: message.sentBy._id === petAppId ? (this.state.username ? this.state.username : message.sentBy.email) : message.sentBy.email,
       text: message.text,
       position: message.sentBy._id === petAppId ? 'right' : 'left',
-      image: {uri: message.sentBy.avatar ? message.sentBy.avatar : PLACEHOLDER },
-      date: new Date(message.createdAt)
+      // image: {uri: message.sentBy.avatar ? message.sentBy.avatar : PLACEHOLDER },
+      image: message.sentBy._id === petAppId ? (avatarThumbnail ? {uri: userAlbum + avatarThumbnail} : defaultAvatar) : defaultAvatar,
+      date: message.createdAt
     };
   }
 
@@ -196,13 +269,13 @@ class BlankPage extends Component {
 
         <Content>
             <View style={{flex:1, flexDirection: 'column', justifyContent: 'space-between', height: ScreenHeight - 80}}>
-              <View style={{flex: 9, backgroundColor: '#FFFFFF'}}>
+              <View style={{flex: 10, backgroundColor: '#FFFFFF'}}>
                 <ScrollView
                   ref='_scrollView' 
                   onContentSizeChange={(contentWidth, contentHeight) => {
                     this.refs._scrollView.scrollTo({x: 0, y: contentHeight, animated: true});
                   }}
-                  style={{backgroundColor: '#f8f8f8'}}  >
+                  style={{backgroundColor: '#ffffff'}}  >
                   <View style={styles.chatWrapper}>
                     <List style={{paddingLeft: 0}}>
                         {
@@ -213,27 +286,79 @@ class BlankPage extends Component {
                                     marginLeft: 0, 
                                     borderBottomWidth: 0, 
                                     marginBottom: 5, 
-                                    marginTop: 5}}>
-                                    <Thumbnail 
-                                      source={require('../../../images/avatarThumbnail.png')} 
-                                      style={{
-                                        alignSelf:'flex-end',
-                                        marginTop: 5,
-                                        width: 60,
-                                        height: 60
-                                      }} />
-                                    <Text style={{marginBottom: 5}}>{ message.name }</Text>
-                                    <Text note 
-                                      style={{ backgroundColor: '#12c799', 
-                                        color:'#ffffff', 
-                                        fontSize: 15,
-                                        padding: 10, 
-                                        borderRadius: 20 }} >
-                                        { message.text }
-                                    </Text>
-                                    <Text note>
-                                      { message.position }
-                                    </Text>
+                                    marginTop: 5,
+                                    flexDirection: 'row'}}>
+                                    
+                                    {
+                                      message.position === 'right' ? (
+                                          <Thumbnail 
+                                          source={message.image} 
+                                          style={{
+                                            alignSelf:'flex-end',
+                                            marginTop: 5,
+                                            width: 60,
+                                            height: 60,
+                                            borderRadius: 100,
+                                            position: 'absolute',
+                                            right: 0,
+                                            top: 10
+                                          }} />
+                                      ) : (<Thumbnail 
+                                          source={message.image} 
+                                          style={{
+                                            alignSelf:'flex-start',
+                                            marginTop: 5,
+                                            width: 60,
+                                            height: 60,
+                                            borderRadius: 100,
+                                            position: 'absolute',
+                                            left: 0,
+                                            top: 10
+                                          }} />)
+                                    }
+                                    {
+                                      message.position === 'right' ? (
+                                          <Text note style={{alignSelf:'flex-end',marginRight: 65, marginBottom: 5}}>{ message.name }</Text>
+                                      ) : (
+                                          <Text note style={{alignSelf:'flex-start',marginLeft: 60, marginBottom: 5}}>{ message.name }</Text>
+                                      )
+                                    }
+                                    {
+                                      message.position === 'right' ? (
+                                          <Text note 
+                                            style={{ backgroundColor:  '#0084ff', 
+                                              color:'#ffffff', 
+                                              fontSize: 15,
+                                              padding: 10,
+                                              borderTopRightRadius: 5,
+                                              borderBottomRightRadius: 10,
+                                              borderTopLeftRadius: 10,
+                                              borderBottomLeftRadius: 10,
+                                              alignSelf:'flex-end',
+                                              marginRight: 65,
+                                              maxWidth: ScreenWidth - 200,
+                                              lineHeight: 20
+                                            }}>
+                                              { message.text }
+                                          </Text>
+                                      ) : (
+                                          <Text note 
+                                            style={{ backgroundColor:  '#f3f3f3', 
+                                              color:'#333333', 
+                                              fontSize: 15,
+                                              padding: 10,  
+                                              borderTopLeftRadius: 5,
+                                              borderBottomLeftRadius: 10,
+                                              borderTopRightRadius: 10,
+                                              borderBottomRightRadius: 10,                                              
+                                              alignSelf:'flex-start',
+                                              marginLeft: 60,
+                                              maxWidth: ScreenWidth - 200,
+                                              lineHeight: 20 }}>
+                                              { message.text }
+                                          </Text>
+                                      )
+                                    }
                                 </ListItem>
                               )
                             })
@@ -244,7 +369,7 @@ class BlankPage extends Component {
                   </View>
                 </ScrollView>
               </View>
-              <View style={{flex: 3, borderTopWidth: 1, borderTopColor: '#cccccc'}}>
+              <View style={{flex: 2, borderTopWidth: 1, borderTopColor: '#cccccc'}}>
                 <UselessTextInput
                   placeholder="Soạn tin nhắn..."
                    multiline = {true}

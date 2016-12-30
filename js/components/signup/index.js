@@ -23,7 +23,7 @@ import authentication from 'feathers-authentication/client';
 var io = require('../../packages/socket.io-client/socket.io');
 const PLACEHOLDER = '../../../images/avatarThumbnail.png';
 
-const background = require('../../../images/background.jpg');
+const background = require('../../../images/background-signup.jpg');
 
 class Signup extends Component {
 
@@ -62,7 +62,7 @@ class Signup extends Component {
     const socket = io('192.168.56.1:3030', options);
 
     this.featherAPI = feathers()
-        .configure(socketio(socket))
+        .configure(socketio(socket, {timeout: 50000}))
         .configure(hooks())
         // Use AsyncStorage to store our login toke
         .configure(authentication({
@@ -193,26 +193,26 @@ class Signup extends Component {
           <Content>
             <Image source={background} style={styles.shadow}>
               <View style={styles.top}>
-                  <Image style={styles.logo} source={require('../../../images/avatar.png')}/>
+                  <Image style={styles.logo} source={require('../../../images/logo-5.png')}/>
               </View>
               <View style={styles.main}>
                 <InputGroup style={styles.input}>
-                  <Icon name="ios-person" style={{marginTop: -10, marginRight: 20, color: "#5b71ff"}}/>
+                  <Icon name="ios-mail-outline" style={{marginTop: -10, marginRight: 20, color: "#5b71ff"}}/>
                   <Input placeholder="Email" onChangeText={email => this.setState({ email })}  style={{color: '#333333'}}/>
                 </InputGroup>
                 <InputGroup style={styles.input}>
-                    <Icon name="ios-call" style={{marginTop: -10, marginRight: 20, color: "#5b71ff"}} />
+                    <Icon name="ios-call-outline" style={{marginTop: -10, marginRight: 20, color: "#5b71ff"}} />
                     <Input placeholder="Số điện thoại" keyboardType="numeric"
                       onChangeText={phone => this.setState({ phone })} />
                 </InputGroup>
                 <InputGroup style={styles.input}>
-                    <Icon name="ios-globe-outline" style={{marginTop: -10, marginRight: 20, color: "#5b71ff"}} />
-                    <Input placeholder="Tên" keyboardType="numeric"
+                    <Icon name="ios-person-outline" style={{marginTop: -10, marginRight: 20, color: "#5b71ff"}} />
+                    <Input placeholder="Tên"
                       onChangeText={firstName => this.setState({ firstName })} />
                 </InputGroup>
                 <InputGroup style={styles.input}>
-                    <Icon name="ios-globe-outline" style={{marginTop: -10, marginRight: 20, color: "#5b71ff"}} />
-                    <Input placeholder="Họ" keyboardType="numeric"
+                    <Icon name="ios-person-outline" style={{marginTop: -10, marginRight: 20, color: "#5b71ff"}} />
+                    <Input placeholder="Họ"
                       onChangeText={lastName => this.setState({ lastName })} />
                 </InputGroup>
                 <InputGroup style={styles.input}>
@@ -227,12 +227,12 @@ class Signup extends Component {
                 {this.state.registerMessage ? <Text style={{ color: template.danger, alignSelf: 'center' }}>{this.state.registerMessage}</Text> : null}
 
                 <Button rounded style={{width: 250, height: 50, alignSelf: 'center', marginBottom: 20, marginTop: 30}} onPress={() => this.signup()}>
-                  <Text style={{color:'#FFFFFF'}}>Register</Text>
+                  <Text style={{color:'#FFFFFF'}}>ĐĂNG KÝ</Text>
                 </Button>
 
                 <Button rounded bordered danger style={{width: 250, height: 50, alignSelf: 'center', marginBottom: 30}}
                   onPress={() => this.replaceRoute('login')}>
-                  Back to login
+                  QUAY VỀ
                 </Button>
 
                 {this.state.is_loading ? <Spinner color='blue' visible={this.state.is_loading} /> : null}

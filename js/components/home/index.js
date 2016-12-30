@@ -47,7 +47,7 @@ class Home extends Component {
       super(props);
       this.state = {
         data: null,
-        categoryType : 0,
+        categoryType : 1,
         pipePage: [],
         currentPage: 'startup',
         results: {},
@@ -353,8 +353,8 @@ class Home extends Component {
                       </CardItem>
 
                       <CardItem style={{backgroundColor: '#fdfdfd', borderBottomWidth: 0}}>
-                          <Text style={{color: '#384850'}}>
-                              {members.content}
+                          <Text style={{color: '#384850'}} numberOfLines={4}>
+                              {members.description}
                           </Text>
                       </CardItem>
 
@@ -399,7 +399,7 @@ class Home extends Component {
 
           {
           	this.state.is_load_more ? (
-          		<Button around style={{alignSelf: 'center'}} onPress = {() => this.loadMoreData()}>Loadmore</Button>
+          		<Button success style={{alignSelf: 'center', marginTop: 10, marginBottom: 10}} onPress = {() => this.loadMoreData()}>Xem thêm</Button>
           	) : null
           }
           </ScrollView>

@@ -25,7 +25,7 @@ const userAlbum = 'http://210.211.118.178/PetsAPI/Images/UserThumbnails/';
 
 var avatarThumbnail = '';
 var coverThumbnail = '';
-
+var user_Id = '';
 var authToken = '';
 
 class SideBar extends Component {
@@ -54,30 +54,38 @@ class SideBar extends Component {
   componentDidMount() {
     let _this = this;
 
+    _this.getUserInformation();
+
     this._loadInitialState();
   }
 
   componentWillMount() {
-    // let _this = this;
+    let _this = this;
+    _this.getUserInformation();
   }
 
-  _loadInitialState = async () => {
+  _loadInitialState () {
     let _this = this;
-    try {
-      var authToken = await AsyncStorage.getItem('AUTH_TOKEN');
-      if (authToken !== null){
-        console.log("GET AUTH_TOKEN IN SIDEBAR: ", authToken );
-        // this.replaceRoute('home');
-        // alert("Check authToken is exist. authToken = " + authToken);
 
-        _this.getUserInformation();
-      } else {
-        try {
-          console.log("Check authToken is NOT exist yet");
-        } catch (error) {
-          //
+    try {
+      AsyncStorage.getItem('AUTH_TOKEN').then((value) => {
+        authToken = value;
+
+        if (authToken !== null){
+          console.log("GET AUTH_TOKEN IN SIDEBAR: ", authToken );
+          // this.replaceRoute('home');
+          // alert("Check authToken is exist. authToken = " + authToken);
+
+          _this.getUserInformation();
+        } else {
+          try {
+            console.log("Check authToken is NOT exist yet");
+          } catch (error) {
+            //
+          }
         }
-      }
+      });
+      
     } catch (error) {
       //
     }
@@ -93,6 +101,8 @@ class SideBar extends Component {
 
   logout() {
     let _this = this;
+    user_Id = '';
+    AsyncStorage.setItem('USER_ID', '');
     _this._removeToken().done();
     _this.closeDrawer();
     _this.replaceRoute('signin');
@@ -103,6 +113,9 @@ class SideBar extends Component {
     AsyncStorage.getItem('USER_ID').then((value) => {
       console.log("UserId in sidebar: ", value);
       // alert("UserId in sidebar: ", value);
+
+      user_Id = value;
+
 
       fetch('http://210.211.118.178/PetsAPI/api/userauthinfos/'+value, {
         method: 'GET',
@@ -122,6 +135,8 @@ class SideBar extends Component {
             phone: responseJson.phone,
             is_loading_data: false
           });
+
+          AsyncStorage.setItem('USER_EMAIL', responseJson.email);
 
           avatarThumbnail = responseJson.avatarThumbnail;
           coverThumbnail = responseJson.coverThumbnail;
@@ -167,21 +182,24 @@ class SideBar extends Component {
                   style={styles.topWrapper}
                   source={require('../../../images/avatar.png')} >
                   <Card style={{backgroundColor: '#f5f5f5', borderWidth: 0, padding: 20}}>
-                      <CardItem style={{borderBottomWidth: 0}}>
+                      
                           {
-                            avatarThumbnail != '../../../images/avatar.png' ? (
-                              <Thumbnail style={{width: 70, height: 70, borderRadius: 100, marginRight: 10}} source={{uri : userAlbum + avatarThumbnail}} />
+                            user_Id ? (
+                              <CardItem style={{borderBottomWidth: 0}}>
+                                <Thumbnail style={{width: 70, height: 70, borderRadius: 100, marginRight: 10}} source={{uri : userAlbum + avatarThumbnail}} />
+                                <Text style={{color: '#384850', fontSize: 25}} numberOfLines={1}>{this.state.username}</Text>
+                                <Text note style={{color: '#384850', fontSize: 17}} numberOfLines={1}>{this.state.email}</Text>
+                              </CardItem>
                             ) : (
-                              <Thumbnail style={{width: 70, height: 70, borderRadius: 100, marginRight: 10}} source={require('../../../images/avatar.png')} />
+                              <CardItem style={{borderBottomWidth: 0}}>
+                                <Thumbnail style={{width: 70, height: 70, borderRadius: 100, marginRight: 10}} source={require('../../../images/avatar.png')} />
+                                <Text>Anonymous</Text>
+                                <Text>anonymous@gmail.com</Text>
+                              </CardItem>
                             )
                           }
-                          {
-                            this.state.username ? <Text style={{color: '#384850', fontSize: 25}}>{this.state.username}</Text> : (<Text>Anonymous</Text>)
-                          }
-                          {
-                            this.state.email ? <Text note style={{color: '#384850', fontSize: 17}}>{this.state.email}</Text> : (<Text>anonymous@gmail.com</Text>)
-                          }
-                      </CardItem>
+
+                      
                   </Card>
               </Image>
           </View>
@@ -195,13 +213,17 @@ class SideBar extends Component {
                 <ListItem button iconLeft onPress={() => this.navigateTo('category')} style={{marginTop: 10, marginBottom: 10, borderBottomColor: '#f3f3f3', paddingBottom: 20}}>
                     <Icon name="ios-bookmarks-outline" style={{ color: '#0A69FE', fontSize: 26, marginRight: 15 }} />
                     <Text style={{fontSize: 19, color: '#384850'}}>DANH MỤC</Text>
-                    <Badge primary>6</Badge>
+                    <Badge primary style={{paddingTop: 0}}>6</Badge>
                 </ListItem>
-                <ListItem button iconLeft onPress={() => this.navigateTo('createPet')} style={{marginTop: 10, marginBottom: 10, borderBottomColor: '#f3f3f3', paddingBottom: 20}}>
+                {
+                  /*
+                  <ListItem button iconLeft onPress={() => this.navigateTo('createPet')} style={{marginTop: 10, marginBottom: 10, borderBottomColor: '#f3f3f3', paddingBottom: 20}}>
                     <Icon name="ios-add-circle-outline" style={{ color: '#0A69FE', fontSize: 26, marginRight: 15 }} />
                     <Text style={{fontSize: 19, color: '#384850'}}>TẠO THÚ CƯNG</Text>
                 </ListItem>
-                <ListItem button iconLeft onPress={() => this.navigateTo('createArticle')} style={{marginTop: 10, marginBottom: 10, borderBottomColor: '#f3f3f3', paddingBottom: 20}}>
+                  */
+                }
+                <ListItem button iconLeft onPress={() => this.navigateTo('createPet')} style={{marginTop: 10, marginBottom: 10, borderBottomColor: '#f3f3f3', paddingBottom: 20}}>
                     <Icon name="ios-book-outline" style={{ color: '#0A69FE', fontSize: 26, marginRight: 15 }} />
                     <Text style={{fontSize: 19, color: '#384850'}}>TẠO BÀI VIẾT</Text>
                 </ListItem>
@@ -259,7 +281,7 @@ class SideBar extends Component {
                     <Text style={{fontSize: 19, color: '#384850'}}>PHÒNG TÁN GẪU</Text>
                 </ListItem>
 
-                <ListItem button iconLeft onPress={() => this.logout()} style={{marginTop: 10, marginBottom: 10, borderBottomColor: '#f3f3f3', paddingBottom: 20}}>
+                <ListItem button iconLeft onPress={() => this.logout()} style={{marginTop: 10, marginBottom: 10, borderBottomColor: '#f3f3f3', paddingBottom: 20, borderBottomWidth: 0}}>
                     <Icon name="ios-log-out-outline" style={{ color: '#0A69FE', fontSize: 26, marginRight: 15 }} />
                     <Text style={{fontSize: 19, color: '#384850'}}>ĐĂNG XUẤT</Text>
                 </ListItem>
