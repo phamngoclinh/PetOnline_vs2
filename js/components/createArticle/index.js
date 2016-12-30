@@ -158,7 +158,7 @@ class CreateArticle extends Component {
           "description": this.state.articleDescription,
           "content": this.state.articleContent,
           "price": this.state.articleBasePrice,
-          "petId": 2
+          "petId": FROM_PET_ID
         })
       })
       .then((response) => response.json())
@@ -188,7 +188,7 @@ class CreateArticle extends Component {
               "Tạo pet thành công",
               "Yeah yeah tạo thành công rồi! Bây giờ chuyển sang trang chủ xem pài post của mình nào. OK?",
               [
-                {text: 'OK', onPress: () => _this.pushRoute('home', 1), style: 'ok'}
+                {text: 'OK', onPress: () => _this.popRoute(), style: 'ok'}
               ]
             );
           }
@@ -215,6 +215,12 @@ class CreateArticle extends Component {
     AsyncStorage.getItem('AUTH_TOKEN').then( (value) => {
       authToken = value;
     });
+
+    AsyncStorage.getItem('PET_ID').then((value) => {
+      FROM_PET_ID = value;
+
+      console.log("FROM_PET_ID: ", value);
+    })
 
     // try {
     //   authToken = await AsyncStorage.getItem(AUTH_TOKEN);

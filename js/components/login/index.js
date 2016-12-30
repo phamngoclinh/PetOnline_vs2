@@ -60,7 +60,7 @@ class Login extends Component {
     };
 
     const options = {transports: ['websocket'], forceNew: true};
-    const socket = io('192.168.56.1:3030', options);
+    const socket = io('192.168.43.165:3030', options);
 
     this.featherAPI = feathers()
         .configure(socketio(socket))

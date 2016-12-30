@@ -13,6 +13,7 @@ import styles from './styles';
 const {
   popRoute,
   pushRoute,
+  replaceAt,
 } = actions;
 
 var Platform = require('react-native').Platform;
@@ -35,7 +36,7 @@ var options = {
   }
 };
 
-
+var userAuthInfoId = '';
 
 class CreatePet extends Component {
 
@@ -47,6 +48,7 @@ class CreatePet extends Component {
     setIndex: React.PropTypes.func,
     popRoute: React.PropTypes.func,
     pushRoute: React.PropTypes.func,
+    replaceAt: React.PropTypes.func,
     navigation: React.PropTypes.shape({
       key: React.PropTypes.string,
     }),
@@ -83,6 +85,11 @@ class CreatePet extends Component {
   pushRoute(route, index) {
     this.props.setIndex(index);
     this.props.pushRoute({ key: route, index: 1 }, this.props.navigation.key);
+  }
+
+  replaceRoute(route) {
+    // this.setUser(this.state.name);
+    this.props.replaceAt('createPet', { key: route }, this.props.navigation.key);
   }
 
   loadImageFromDevice() {
@@ -155,7 +162,7 @@ class CreatePet extends Component {
           "name": this.state.petName,
           "birthDate": this.state.petDate,
           "price": this.state.petPrice,
-          "userAuthInfoId": 1,
+          "userAuthInfoId": userAuthInfoId,
           "thumbNailInBase64": this.state.avatarSourceBase64
         })
       })
@@ -177,17 +184,18 @@ class CreatePet extends Component {
               ]
             );            
           } else {
+            console.log("PEt created: ", responseJson);
+            AsyncStorage.setItem('PET_ID', responseJson.id.toString());
+
             _this.setState({
-              data: responseJson,
-              authToken : responseJson.authToken,
               is_loading: false
             });
 
             Alert.alert(
               "Tạo pet thành công",
-              "Yeah yeah tạo thành công rồi! Bây giờ chuyển sang trang tạo Post. OK?",
+              "Tiếp tục tạo bài viết cho Pet",
               [
-                {text: 'OK', onPress: () => _this.pushRoute('createArticle', 3), style: 'ok'}
+                {text: 'OK', onPress: () => this.replaceRoute('createArticle'), style: 'ok'}
               ]
             );
           }
@@ -213,6 +221,10 @@ class CreatePet extends Component {
   _loadInitialState () {
     AsyncStorage.getItem('AUTH_TOKEN').then( (value) => {
       authToken = value;
+    });
+
+    AsyncStorage.getItem('USER_ID').then( (value) => {
+      userAuthInfoId = value;
     });
 
     // try {
@@ -333,6 +345,7 @@ function bindAction(dispatch) {
     popRoute: key => dispatch(popRoute(key)),
     setIndex: index => dispatch(setIndex(index)),
     pushRoute: (route, key) => dispatch(pushRoute(route, key)),
+    replaceAt: (routeKey, route, key) => dispatch(replaceAt(routeKey, route, key)),
   };
 }
 

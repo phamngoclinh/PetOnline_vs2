@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import { TouchableOpacity, Linking, Image, Modal, AsyncStorage } from 'react-native';
+import { TouchableOpacity, Linking, Image, Modal, AsyncStorage, ScrollView } from 'react-native';
 import { connect } from 'react-redux';
 import { actions } from 'react-native-navigation-redux-helpers';
 import { Container, Header, Title, Content, H1, H2, H3, H4, Card, CardItem, Text, Button, Icon, InputGroup, Input, Thumbnail, List, ListItem, Spinner, Footer, FooterTab, Badge } from 'native-base';
@@ -58,8 +58,10 @@ class Home extends Component {
         is_loading_data: false,
         is_search: false,
         skip: 0,
-        limit: 10,
-        authenticateToken : ''
+        limit: 5,
+        authenticateToken : '',
+        is_loading_more_data : false,
+        is_load_more: false
       };
 
       this.search = this.search.bind(this);
@@ -94,12 +96,14 @@ class Home extends Component {
             // Store the results in the state variable results and set loading to
             _this.setState({
               data: responseJson,
-              is_loading_data: false
+              is_loading_data: false,
+              is_load_more: true
             });
         })
         .catch((error) => {
             _this.setState({
-              loading: false
+              loading: false,
+              is_load_more: false
           });
             console.error(error);
         });
@@ -180,7 +184,31 @@ class Home extends Component {
     let _this = this;
     _this._saveDetailId(id);
     AsyncStorage.getItem('VIEW_ARTICLE_ID').then( (value) => {
-      this.pushRoute('detail', 2);
+    	fetch('http://210.211.118.178/PetsAPI/api/articles/'+value+'/updateview', {
+          method: 'PUT',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Auth-Token': authToken
+          }
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+            // Store the results in the state variable results and set loading to
+            // _this.setState({
+            //   data: responseJson,
+            //   is_loading_data: false
+            // });
+        	console.log('PUT success');
+
+        	this.pushRoute('detail', 2);
+        })
+        .catch((error) => {
+           //  _this.setState({
+           //    loading: false
+          	// });
+            console.error(error);
+        });
     });
   }
 
@@ -191,6 +219,60 @@ class Home extends Component {
       console.log(error);
     }
   };
+
+
+  loadMoreData() {
+  	let _this = this;
+
+  	_this.setState({
+      is_loading_more_data: true
+    });
+
+    var newSkip = _this.state.skip + _this.state.limit;
+
+    _this.setState({
+    	skip : newSkip
+    });
+
+    fetch('http://210.211.118.178/PetsAPI/api/articles/'+_this.state.categoryType+'/'+newSkip+'/'+_this.state.limit, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Auth-Token': authToken
+      }
+    })
+    .then((response) => response.json())
+    .then((responseJson) => {
+    	var oldData = this.state.data;
+    	var addData = responseJson;
+    	var newData = [];
+    	newData = this.state.data;
+    	addData.forEach(function(item) {
+    		newData.push(item);
+    	});
+        // Store the results in the state variable results and set loading to
+        _this.setState({
+          data: newData,
+          is_loading_more_data: false
+        });
+
+        if(responseJson.length < this.state.limit) {
+        	_this.setState({
+        		is_load_more: false
+        	});
+        }
+
+        console.log("New Data: ", addData);
+        console.log("All Data: ", newData);
+    })
+    .catch((error) => {
+        _this.setState({
+          is_loading_more_data: false
+      });
+        console.error(error);
+    });
+  }
 
   // getID = async () => {
   //   try {
@@ -243,11 +325,15 @@ class Home extends Component {
 
         <Content padder>
           {this.state.is_loading_data ? <Spinner color='blue' visible={this.state.is_loading_data} /> : null}
-          {
+          
+
+          <ScrollView>
+          	{
             this.state.data ?
               this.state.data.map((members, index) => {
                 return (
-                  <Card key={members.id} style={{ flex: 0, marginBottom: 10, borderWidth: .5, borderColor: '#FFFAFA'}}>
+                  
+                  	<Card key={members.id} style={{ flex: 0, marginBottom: 10, borderWidth: .5, borderColor: '#FFFAFA'}}>
                       <CardItem style={{backgroundColor: '#fdfdfd', borderBottomWidth: 0}}>
                           <Thumbnail source={{uri : userAlbum + members.Pet.User.avatarThumbnail}} />
                           <Text onPress={() => this.viewDetail(members.id)} style={{fontSize: 17}}>{members.title}</Text>
@@ -275,15 +361,11 @@ class Home extends Component {
                       <CardItem style={{backgroundColor: '#fdfdfd', borderTopWidth: 0, flexDirection: 'row', justifyContent: 'space-between', borderBottomColor: '#f9f9f9'}}>
                         <Button transparent>
 	                        <Icon name='ios-calendar-outline' />
-	                        <Text note>Ngày đăng: {members.createdOn.slice(0, 10)}</Text>
+	                        <Text note style={{fontSize: 10}}>Ngày đăng: {members.createdOn.slice(0, 10)}</Text>
 	                    </Button>
 	                    <Button transparent>
 	                        <Icon name='ios-eye-outline' />
-	                        <Text note>Lượt xem: {members.view}</Text>
-	                    </Button>
-	                    <Button transparent>
-	                        <Icon name='ios-camera-outline' />
-	                        <Text note>Ảnh: {members.view}</Text>
+	                        <Text note style={{fontSize: 10}}>Lượt xem: {members.view}</Text>
 	                    </Button>
                       </CardItem>
 
@@ -314,6 +396,13 @@ class Home extends Component {
               })
              : null
           }
+
+          {
+          	this.state.is_load_more ? (
+          		<Button around style={{alignSelf: 'center'}} onPress = {() => this.loadMoreData()}>Loadmore</Button>
+          	) : null
+          }
+          </ScrollView>
 
          <Modal
               animationType="slide"

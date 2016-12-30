@@ -61,10 +61,10 @@ class BlankPage extends Component {
     };
 
     const options = {transports: ['websocket'], forceNew: true};
-    const socket = io('192.168.56.1:3030', options);
+    const socket = io('http://192.168.43.165:3030', options);
 
     this.featherAPI = feathers()
-        .configure(socketio(socket))
+        .configure(socketio(socket, {timeout: 5000}))
         .configure(hooks())
         // Use AsyncStorage to store our login toke
         .configure(authentication({
@@ -85,6 +85,13 @@ class BlankPage extends Component {
 
     this.featherAPI.io.on('connect', () => {
         console.log("Connect to Socket success");
+
+        this.featherAPI.service('messages').on('created', message => {
+          const messages = this.state.messages;
+          messages.push(_this.formatMessage(message));
+
+          _this.setState({messages});
+        });
 
         var loginInfo = {
             type: 'local',
@@ -109,12 +116,7 @@ class BlankPage extends Component {
         });
     });
 
-    this.featherAPI.service('messages').on('created', message => {
-      const messages = this.state.messages;
-      messages.push(_this.formatMessage(message));
-
-      _this.setState({messages});
-    });
+    
   }
 
   componentWillMount() {
@@ -151,6 +153,8 @@ class BlankPage extends Component {
     const query = {query: {$sort: {updatedAt: -1}, $limit: 15}};
 
     this.featherAPI.service('messages').find(query).then((response) => {
+      console.log("Response: ", response);
+
       if(response.total > 0) {
         const messages = this.state.messages;
         result = response.data;
@@ -165,7 +169,7 @@ class BlankPage extends Component {
         _this.setState({messages});
       }
     }).catch((error) => {
-
+      console.log("error: ", error);
     });
   }
 
@@ -192,7 +196,7 @@ class BlankPage extends Component {
 
         <Content>
             <View style={{flex:1, flexDirection: 'column', justifyContent: 'space-between', height: ScreenHeight - 80}}>
-              <View style={{flex: 10, backgroundColor: '#FFFFFF'}}>
+              <View style={{flex: 9, backgroundColor: '#FFFFFF'}}>
                 <ScrollView
                   ref='_scrollView' 
                   onContentSizeChange={(contentWidth, contentHeight) => {
@@ -240,7 +244,7 @@ class BlankPage extends Component {
                   </View>
                 </ScrollView>
               </View>
-              <View style={{flex: 2, borderTopWidth: 1, borderTopColor: '#cccccc'}}>
+              <View style={{flex: 3, borderTopWidth: 1, borderTopColor: '#cccccc'}}>
                 <UselessTextInput
                   placeholder="Soạn tin nhắn..."
                    multiline = {true}

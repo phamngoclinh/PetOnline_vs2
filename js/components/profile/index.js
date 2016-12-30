@@ -94,7 +94,9 @@ class Profile extends Component {
           changeLastName: '',
           changeEmail : '',
           changePhone : '',
-          changeAddress: ''
+          changeAddress: '',
+          otpCode: '',
+          newPassword: ''
       };
   }
 
@@ -411,7 +413,7 @@ class Profile extends Component {
       });
       // ...
       fetch('http://210.211.118.178/PetsAPI/api/userauthinfos/'+userId, {
-        method: 'POST',
+        method: 'PUT',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
@@ -467,6 +469,110 @@ class Profile extends Component {
       });
 
     }
+  }
+
+  // get Opt code form forget password form (in popup)
+  getOptCode() {
+    let _this = this;
+
+    fetch('http://210.211.118.178/PetsAPI/api/userauthinfos/requestotp', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "email": this.state.email
+      })
+    })
+    .then((response) => response.json())
+    .then((responseJson) => {
+        // Store the results in the state variable results and set loading to
+        console.log(responseJson);
+
+        if(responseJson.errorCode) {
+          console.log("Code: "+ responseJson.errorMsg);
+          _this.setState({
+            getOptMessage : responseJson.errorMsg
+          });
+        } else {
+          _this.setState({
+            otpCode: '',
+            getOptMessage : "Mã OTP đã được gửi"
+          });
+        }
+    })
+    .catch((error) => {
+        // _this.setState({
+        //     is_loading: false
+        // });
+        Alert.alert(
+          "Lỗi",
+          "Lỗi phát sinh trong quá trình gửi yêu cầu. Vui lòng thử lại!",
+          [
+            {text: 'OK', onPress: () => console.log('OK Pressed')},
+          ]
+        );
+        console.error(error);
+    });
+  }
+
+  // Reset passoword in Forget Password Form (in Popup)
+  resetPassword() {
+      let _this = this;
+
+      if(this.state.otpCode == '' || this.state.newPassword == '') {
+        _this.setState({
+          changePasswordMessage: 'Vui lòng điền đầy đủ thông tin'
+        });
+      } else {
+        // _this.setState({
+        //   is_submit_forget: true
+        // });
+        
+        fetch('http://210.211.118.178/PetsAPI/api/userauthinfos/resetpassword', {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            "email": this.state.email,
+            "oTPCode": this.state.otpCode,
+            "passwordHash": this.state.newPassword
+          })
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+            // Store the results in the state variable results and set loading to
+            console.log(responseJson);
+
+            if(responseJson.errorCode) {
+              console.log("Code: "+ responseJson.errorMsg);
+              _this.setState({
+                changePasswordMessage: responseJson.errorMsg
+              });          
+            } else {
+              _this.setState({
+                changePasswordMessage: 'Cập nhật mật khẩu thành công'
+              });
+            }
+        })
+        .catch((error) => {
+            // _this.setState({
+            //     is_loading: false
+            // });
+            Alert.alert(
+              "Lỗi",
+              "Lỗi phát sinh trong quá trình gửi yêu cầu. Vui lòng thử lại!",
+              [
+                {text: 'OK', onPress: () => console.log('OK Pressed')},
+              ]
+            );
+            console.error(error);
+        });
+
+      }
   }
 
   search() {
@@ -637,26 +743,39 @@ class Profile extends Component {
                               <List>
                                   <ListItem>
                                       <InputGroup>
-                                          <Input inlineLabel label="Nhập mật khẩu cũ" placeholder="*********" />
+                                          <Input inlineLabel label="Xác nhận OTP" placeholder="Nhận mã OTP" onChangeText={otpCode => this.setState({ otpCode })} />
                                       </InputGroup>
                                   </ListItem>
                                   <ListItem>
                                       <InputGroup>
-                                          <Input inlineLabel label="Xác nhận OTP" placeholder="Nhận mã OTP" />
-                                      </InputGroup>
-                                  </ListItem>
-                                  <ListItem>
-                                      <InputGroup>
-                                          <Input inlineLabel label="Đổi mật khẩu" placeholder="Nhập mật khẩu mới" />
+                                          <Input inlineLabel label="Đổi mật khẩu" placeholder="Nhập mật khẩu mới" onChangeText={newPassword => this.setState({ newPassword })}/>
                                       </InputGroup>
                                   </ListItem>
                               </List>
+                              <View>
+                                  {
+                                    this.state.getOptMessage ? 
+                                    <Text style={{ color: template.danger, alignSelf: 'center', marginTop: 10 }}>{this.state.getOptMessage}</Text>
+                                     : null
+                                  }
+                              </View>
+                              <View>
+                                  {
+                                    this.state.changePasswordMessage ? 
+                                    <Text style={{ color: template.danger, alignSelf: 'center', marginTop: 10 }}>{this.state.changePasswordMessage}</Text>
+                                     : null
+                                  }
+                              </View>
                               <List style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                                   <ListItem style={{borderBottomWidth: 0}}>
-                                    <Button rounded danger bordered block style={{maxWidth: 150, alignSelf: 'center', width: 150, marginTop: 20, marginBottom: 20}}> Lấy mã OTP </Button>
+                                    <Button rounded danger bordered block 
+                                      style={{maxWidth: 150, alignSelf: 'center', width: 150, marginTop: 20, marginBottom: 20}}
+                                      onPress = {() => this.getOptCode()}> Lấy mã OTP </Button>
                                   </ListItem>
                                   <ListItem style={{borderBottomWidth: 0}}>
-                                    <Button rounded bordered block style={{maxWidth: 150, alignSelf: 'center', width: 150, marginTop: 20, marginBottom: 20}}> Cập nhật </Button>
+                                    <Button rounded bordered block 
+                                      style={{maxWidth: 150, alignSelf: 'center', width: 150, marginTop: 20, marginBottom: 20}}
+                                      onPress = {() => this.resetPassword()}> Cập nhật </Button>
                                   </ListItem>
                               </List>
                           </CardItem>
